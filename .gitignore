@@ -1,0 +1,6 @@
+/.idea/*
+/.idea/payopts.com.iml
+/.idea/vcs.xml
+/.idea/modules.xml
+/.idea/.gitignore
+*.php

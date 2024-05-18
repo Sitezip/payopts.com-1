@@ -1,0 +1,98 @@
+{
+  "header":"",
+  "footer":"",
+  "action":"address",
+  "method": "post",
+  "elementLayoutDefault":null,
+  "xmicroFormatx": "Name{{name}}>scrub1|scrub2>value1|value2{{value}}>type>icon{{layout}}",
+  "elements":[
+    {
+      "label":"Name",
+      "layout":"twothird",
+      "name":"addressee",
+      "value":"",
+      "scrubs":[
+        "req"
+      ],
+      "placeholder":""
+    },
+    {
+      "label":"Address Type",
+      "layout":"third",
+      "name":"isBilling",
+      "type":"select",
+      "value":"",
+      "scrubs":[
+        "req"
+      ],
+      "options": [
+        {"value": 0, "ux": "Only Ship"},
+        {"value": 1, "ux": "Both Ship/Bill"}
+      ],
+      "placeholder":""
+    },
+    {
+      "label":"Address",
+      "layout":"twothird",
+      "name":"address",
+      "value":"",
+      "scrubs":[
+        "req"
+      ],
+      "placeholder":""
+    },
+    {
+      "label":"Suite/Apt",
+      "layout":"third",
+      "name":"address2",
+      "value":"",
+      "scrubs":[
+      ],
+      "placeholder":""
+    },
+    {
+      "label":"City",
+      "layout":"third",
+      "name":"city",
+      "value":"",
+      "scrubs":[
+        "req"
+      ],
+      "placeholder":""
+    },
+    {
+      "label":"State",
+      "layout":"third",
+      "name":"stateCd",
+      "value":"",
+      "scrubs":[
+        "req"
+      ],
+      "placeholder":""
+    },
+    {
+      "label":"Zipcode",
+      "layout":"third",
+      "name":"postalCd",
+      "value":"",
+      "scrubs":[
+        "req"
+      ],
+      "placeholder":""
+    }
+  ],
+  "buttons":[
+    {
+      "layout":"half",
+      "type":"submit",
+      "class":"btn-dark view-shipping",
+      "name":"Save & View Shipping"
+    },
+    {
+      "layout":"half",
+      "type":"submit",
+      "class":"btn-outline-dark",
+      "name":"Save"
+    }
+  ]
+}

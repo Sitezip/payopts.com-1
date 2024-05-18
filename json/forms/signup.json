@@ -1,0 +1,75 @@
+{
+  "header":"",
+  "footer":"",
+  "action":"/Auth/remote/signUp",
+  "elements":[
+    {
+      "type":"text",
+      "id":"",
+      "layout":"half",
+      "class":"",
+      "label":"Partner Key",
+      "icon":"",
+      "layout":"",
+      "name":"extraZap",
+      "value":"",
+      "options":[
+
+      ],
+      "scrubs":["req","expect:zCd"],
+      "placeholder":"zCd..."
+    },
+    {
+      "type":"text",
+      "id":"",
+      "class":"",
+      "label":"Email (used as Username)",
+      "icon":"",
+      "layout":"",
+      "name":"user",
+      "value":"",
+      "options":[
+
+      ],
+      "scrubs":["req","email"],
+      "placeholder":""
+    },
+    {
+      "type":"password",
+      "id":"",
+      "class":"",
+      "label":"Create a passcode",
+      "icon":"",
+      "layout":"",
+      "name":"pass",
+      "value":"",
+      "options":[
+
+      ],
+      "scrubs":["req","minlen:8"],
+      "placeholder":""
+    },
+    {
+      "type":"password",
+      "id":"",
+      "class":"",
+      "label":"Confirm the passcode",
+      "icon":"",
+      "layout":"",
+      "name":"pass2",
+      "value":"",
+      "options":[
+
+      ],
+      "scrubs":["req","minlen:8","match:pass"],
+      "placeholder":""
+    }
+  ],
+  "buttons":[
+    {
+      "type":"button",
+      "class":"",
+      "name":"Signup"
+    }
+  ]
+}
