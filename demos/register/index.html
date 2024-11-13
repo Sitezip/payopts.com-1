@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Searchable Input Dropdown</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Style for Sticky Header */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style the dropdown list */
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            /*max-height: 200px;*/
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-top: none;
+            z-index: 1000;
+        }
+        .search-dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff  ;
+        }
+        .search-dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Footer styling */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sticky Header Section -->
+<header class="sticky-header text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-center">
+                <div class="position-relative core-pocket" data-core-templates="prod-search" style="width: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container mt-5 core-pocket" data-core-templates="ui-cart">
+    <p>Your main content here...</p>
+</div>
+
+<!-- Footer Section -->
+<footer class="text-center p-3">
+    <button class="btn btn-primary">Buy Now</button>
+</footer>
+
+<section id="cr-data" style="display:none;">
+    <template name="prod-search">
+        <div class="input-group">
+            <input autocomplete="off" type="text" class="form-control" id="searchInput" placeholder="Search..." onkeyup="filterOptions()">
+        </div>
+        <div class="search-dropdown d-none" id="dropdownOptions">
+            <div class="core-clone search-dropdown-item" data-core-data="prods" data-core-source="https://dummyjson.com/products?limit=30">
+                <div class="row m-0">
+                    <div class="col small">
+                        {{rec:title:upper}}
+                        {{rec:sku}}
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-sm btn-outline-secondary itemAdd">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template name="ui-cart">
+        <div class="container mt-4">
+            <h2 class="text-center">PayOpts Register</h2>
+            <table class="table table-bordered table-hover mt-3">
+                <thead class="table-light">
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="core-clone" data-core-data="cart">
+                    <td>{{rec:title}}</td>
+                    <td>{{aug:description}}</td>
+                    <td>{{rec:price}}</td>
+                    <td>
+                        <div class="input-group quantity-input-group">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
+                        <input type="number" value="1" min="1" class="form-control text-center quantity-input" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
+                    </div>
+                    </td>
+                    <td class="total-price"></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+                    <td><strong class="grand-total">$0.00</strong></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </template>
+</section>  
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Sitezip/core.sbs@20240815.0/core.js"></script>
+
+<script>
+    core.ud.init = () => {
+        core.cr.setData('hit', {
+            ts:core.hf.date(null,'ts'),
+            YYYY:core.hf.date(null,'YYYY')
+        });
+
+        //ccSetup
+        let ccYYYY = [];
+        [0,1,2,3,4,5,6].forEach((i)=>{
+        ccYYYY.push({'YYYY':+core.cr.getData('hit').YYYY + i});
+        })
+        let ccMM = [{MM:'January'},{MM:'February'},{MM:'March'},{MM:'April'},{MM:'May'},{MM:'June'},{MM:'July'},{MM:'August'},{MM:'September'},{MM:'October'},{MM:'November'},{MM:'December'}]
+        core.cr.setData('ccYYYY', ccYYYY);
+        core.cr.setData('ccMM', ccMM);
+        core.cr.setData('cart', []);
+        core.useDebugger = true;
+    }
+
+    core.ud.postflight = (dataRef, dataObj, type) => {
+        if(type === 'data'){
+            switch(dataRef){
+                case 'prods':
+                    dataObj = dataObj.products;
+                    setTimeout(()=>{                
+                        // Hide the dropdown when an option is clicked
+                        document.querySelectorAll('.search-dropdown-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                document.getElementById('searchInput').value = this.textContent.trim();
+                                document.getElementById('dropdownOptions').classList.add('d-none');
+                            });
+                        });
+                    },1000)
+                    break;
+            }
+        }else{
+            //TODO
+        }
+        if(core.useDebugger) console.log('ud.postflight',{dataRef, dataObj, type});
+        return dataObj;
+    }
+
+    core.ud.postpaint = (dataRef, dataObj, type) => {
+        if(type === 'data'){
+            switch(dataRef){
+                case 'prods':
+                    setTimeout(()=>{                
+                        // Hide the dropdown when an option is clicked
+                        document.querySelectorAll('.search-dropdown-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                document.getElementById('searchInput').value = this.textContent.trim();
+                                document.getElementById('dropdownOptions').classList.add('d-none');
+                            });
+                        });
+                    },250)
+                    break;
+            }
+        }else{
+            //TODO
+        }
+        if(core.useDebugger) console.log('ud.postpaint',{dataRef, dataObj, type});
+    }
+
+    function filterOptions() {
+        const input    = document.getElementById("searchInput").value.toUpperCase();
+        const dropdown = document.getElementById("dropdownOptions");
+        const items    = dropdown.querySelectorAll(".search-dropdown-item");
+
+        // Show the dropdown if input has value
+        dropdown.classList.toggle("d-none", !input);
+
+        items.forEach(item => {
+            const text = item.textContent || item.innerText;
+            item.style.display = text.toUpperCase().includes(input) ? "" : "none";
+        });
+    }
+
+    function increaseQuantity(button) {
+        const input = button.parentElement.querySelector('.quantity-input');
+        input.value = parseInt(input.value) + 1;
+    }
+
+    function decreaseQuantity(button) {
+        const input = button.parentElement.querySelector('.quantity-input');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+</script>
+</body>
+</html>
