@@ -61,13 +61,11 @@
     </div>
 </header>
 
-<div class="container mt-5 core-pocket" data-core-templates="ui-cart">
-    <p>Your main content here...</p>
-</div>
+<div id="cart-list" class="container mt-5 core-pocket" data-core-templates="ux-cart"></div>
 
 <!-- Footer Section -->
 <footer class="text-center p-3">
-    <button class="btn btn-primary">Buy Now</button>
+    <button class="btn btn-primary">Create Payment</button>
 </footer>
 
 <section id="cr-data" style="display:none;">
@@ -77,21 +75,26 @@
         </div>
         <div class="search-dropdown d-none" id="dropdownOptions">
             <div class="core-clone search-dropdown-item" data-core-data="prods" data-core-source="https://dummyjson.com/products?limit=30">
-                <div class="row m-0">
-                    <div class="col small">
-                        {{rec:title:upper}}
-                        {{rec:sku}}
+                <div class="row m-0 small">
+                    <div class="col p-0 m-0">
+                        {{rec:thumbnail:imgsrc:class="w-50"}}
                     </div>
-                    <div class="col">
-                        <button type="button" class="btn btn-sm btn-outline-secondary itemAdd">Add</button>
+                    <div class="col p-0 m-0 text-truncate">
+                        {{rec:title:upper}}
+                    </div>
+                    <div class="col p-0 m-0">
+                        {{rec:sku:upper}}
+                    </div>
+                    <div class="col p-0 m-0">
+                        <button type="button" class="btn btn-sm btn-outline-secondary item-add p-1">Add</button>
                     </div>
                 </div>
             </div>
         </div>
     </template>
-    <template name="ui-cart">
+    <template name="ux-cart">
         <div class="container mt-4">
-            <h2 class="text-center">PayOpts Register</h2>
+            <h2 class="text-center">PayOpts Add & Pay</h2>
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                 <tr>
@@ -105,22 +108,22 @@
                 <tbody>
                 <tr class="core-clone" data-core-data="cart">
                     <td>{{rec:title}}</td>
-                    <td>{{aug:description}}</td>
-                    <td>{{rec:price}}</td>
+                    <td class="overflow-hidden">{{rec:description}}</td>
+                    <td class="text-end">{{rec:price:money:$}}</td>
                     <td>
-                        <div class="input-group quantity-input-group">
-                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
-                        <input type="number" value="1" min="1" class="form-control text-center quantity-input" readonly>
-                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
-                    </div>
+                        <div class="input-group input-group-sm quantity-input-group">
+                            <button class="btn btn-sm btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
+                            <input type="number" value="{{rec:quantity}}" min="1" class="form-control text-center quantity-input" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
+                        </div>
                     </td>
-                    <td class="total-price"></td>
+                    <td class="total-price text-end">{{rec:total:money:$}}</td>
                 </tr>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
-                    <td><strong class="grand-total">$0.00</strong></td>
+                    <td><strong class="grand-total h--cartTotal f--money" data-f-clue="$"></strong></td>
                 </tr>
                 </tfoot>
             </table>
@@ -157,15 +160,6 @@
             switch(dataRef){
                 case 'prods':
                     dataObj = dataObj.products;
-                    setTimeout(()=>{                
-                        // Hide the dropdown when an option is clicked
-                        document.querySelectorAll('.search-dropdown-item').forEach(item => {
-                            item.addEventListener('click', function() {
-                                document.getElementById('searchInput').value = this.textContent.trim();
-                                document.getElementById('dropdownOptions').classList.add('d-none');
-                            });
-                        });
-                    },1000)
                     break;
             }
         }else{
@@ -179,12 +173,18 @@
         if(type === 'data'){
             switch(dataRef){
                 case 'prods':
-                    setTimeout(()=>{                
+                    setTimeout(()=>{
+                        document.getElementById('searchInput').addEventListener('focus', function() {
+                            this.value = '';
+                        });
                         // Hide the dropdown when an option is clicked
-                        document.querySelectorAll('.search-dropdown-item').forEach(item => {
+                        document.querySelectorAll('.item-add').forEach(item => {
                             item.addEventListener('click', function() {
-                                document.getElementById('searchInput').value = this.textContent.trim();
+                                document.getElementById('searchInput').value = 'Added!';
                                 document.getElementById('dropdownOptions').classList.add('d-none');
+                                // Add the item to the cart
+                                const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-prods'), 0)));
+                                addItemToCart(itemRecord)
                             });
                         });
                     },250)
@@ -210,9 +210,59 @@
         });
     }
 
+    const addItemToCart = (itemRecord) => {
+        const cart = core.cr.getData('cart');
+        // Check cart for item
+        let itemInCart = false;
+        for (const item of cart) {
+            if(item.sku === itemRecord.sku){
+                itemInCart = true;
+                if(itemRecord.hasOwnProperty('quantity')){
+                    item.quantity = itemRecord.quantity;
+                }else{
+                    item.quantity = item.quantity + 1;
+                }
+                item.total = item.quantity * +item.price;
+            }
+        }
+
+        // Add new item
+        if(!itemInCart){
+            itemRecord.quantity = itemRecord.quantity || 1;
+            itemRecord.total    = itemRecord.quantity * +itemRecord.price;
+            cart.push(itemRecord);
+        }
+
+        // Store the cart
+        core.cr.setData('cart', cart);
+
+        // Refresh the cart UX
+        refreshCart();
+    }
+
+    const refreshCart = () => {
+        const pocket = document.getElementById('cart-list');
+        pocket.classList.remove('core-pocketed');
+        pocket.classList.add('core-pocket');
+        pocket.innerHTML = "";
+
+        // Total the cart
+        const cart = core.cr.getData('cart');
+        let cartTotal = 0;
+        for (const item of cart) {
+            cartTotal+= +item.total;
+        }
+        core.cr.setData('cartTotal', cartTotal);
+
+        core.pk.init();
+    }
+
     function increaseQuantity(button) {
         const input = button.parentElement.querySelector('.quantity-input');
         input.value = parseInt(input.value) + 1;
+        const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
+        itemRecord.quantity = +input.value;
+        addItemToCart(itemRecord);
     }
 
     function decreaseQuantity(button) {
@@ -220,6 +270,9 @@
         if (parseInt(input.value) > 1) {
             input.value = parseInt(input.value) - 1;
         }
+        const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
+        itemRecord.quantity = +input.value;
+        addItemToCart(itemRecord);
     }
 
 </script>
