@@ -46,9 +46,34 @@
             width: 100%;
             background-color: #f8f9fa;
         }
+
+        /* Full-screen overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+        }
+
+        /* Centered text */
+        .overlay-content {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+
+<div id="overlay" class="overlay d-none">
+    <div class="overlay-content">Processing...</div>
+</div>
 
 <!-- Sticky Header Section -->
 <header class="sticky-header text-center">
@@ -113,6 +138,22 @@
     <span class="text-secondary small mb-0">payopts.com &copy; <span class="h-hit-ts f-date" data-f-clue="YYYY"></span></span>
 </footer>
 
+<div id="payopts-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="modal-body" class="modal-body core-pocket" data-core-templates="LOADING"></div>
+            <div class="modal-footer d-none">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section id="cr-data" style="display:none;">
     <template name="prod-search">
         <div class="input-group">
@@ -131,7 +172,8 @@
                         {{rec:sku:upper}}
                     </div>
                     <div class="col p-0 m-0">
-                        <button type="button" class="btn btn-sm btn-outline-secondary item-add p-1">Add</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary item-add p-1">Add</button>
+                            <a href="#" class="btn" target="#modal-body" data-core-templates="EMPTY">+</a>
                     </div>
                 </div>
             </div>
@@ -294,6 +336,8 @@
         if(core.useDebugger) console.log('ud.postpaint',{dataRef, dataObj, type});
     }
 
+    const modal = new bootstrap.Modal(document.getElementById('payopts-modal'), {});
+
     function itemAddCleanup() {
         document.getElementById('searchInput').value = 'Added!';
         document.getElementById('dropdownOptions').classList.add('d-none');
@@ -400,6 +444,15 @@
         const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
         itemRecord.quantity = +input.value;
         addItemToCart(itemRecord);
+    }
+
+    function overlayShowHide(show) {
+        const overlay = document.getElementById('overlay');
+        if(show) {
+            overlay.classList.remove('d-none');
+        } else {
+            overlay.classList.add('d-none');
+        }
     }
 
     function decreaseQuantity(button) {
