@@ -69,12 +69,21 @@
 <footer class="text-center p-3">
     <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Payment Options</button>
     <ul class="dropdown-menu">
-        <li><a id="payopts-text" class="dropdown-item" href="#">By Text</a></li>
-        <li><a id="payopts-email" class="dropdown-item" href="#">By Email</a></li>
-        <li><a id="payopts-popup" class="dropdown-item" href="#">Pay Here</a></li>
+        <li><a id="payopts-text" class="dropdown-item" href="#">Pay by Text</a></li>
+        <li><a id="payopts-email" class="dropdown-item" href="#">Pay by Email</a></li>
+        <li><a id="payopts-popup" class="dropdown-item" href="#">Pay on Screen</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><input class="form-control form-control-sm m-0" id="cart-discount" placeholder="Discount Code" type="text"></li>
-        <li><input class="form-control form-control-sm m-0 h-taxes-zipcode" id="cart-zipcode" placeholder="Zipcode" type="text"></li>
+        <li>
+            <div class="m-2">
+                <input class="form-control form-control-sm" id="cart-discount" placeholder="Discount Code" type="text">
+            </div>
+        </li>
+        <li>
+            <div class="m-2">
+                <input class="form-control form-control-sm h-taxes-zipcode" id="cart-zipcode" placeholder="Zipcode" type="text">
+            </div>
+        </li>
+        <li><hr class="dropdown-divider"></li>
         <li><a href="?" class="small ms-2">Reset Cart</a></li>
     </ul>
     <br>
