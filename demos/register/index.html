@@ -55,7 +55,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
-                <div class="position-relative core-pocket" data-core-templates="prod-search" style="width: 300px;"></div>
+                <div id="prod-list" class="position-relative core-pocket" data-core-templates="prod-search" style="width: 300px;"></div>
             </div>
         </div>
     </div>
@@ -67,11 +67,15 @@
 
 <!-- Footer Section -->
 <footer class="text-center p-3">
-    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Take Payment</button>
+    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Payment Options</button>
     <ul class="dropdown-menu">
         <li><a id="payopts-text" class="dropdown-item" href="#">By Text</a></li>
         <li><a id="payopts-email" class="dropdown-item" href="#">By Email</a></li>
         <li><a id="payopts-popup" class="dropdown-item" href="#">Pay Here</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><input class="form-control form-control-sm m-0" id="cart-discount" placeholder="Discount Code" type="text"></li>
+        <li><input class="form-control form-control-sm m-0 h-taxes-zipcode" id="cart-zipcode" placeholder="Zipcode" type="text"></li>
+        <li><a href="?" class="small ms-2">Reset Cart</a></li>
     </ul>
     <br>
     <span class="text-secondary small mb-0">payopts.com &copy; <span class="h-hit-ts f-date" data-f-clue="YYYY"></span></span>
@@ -108,9 +112,9 @@
                 <thead class="table-light">
                 <tr>
                     <th>Item</th>
-                    <th>Description</th>
+                    <th>Desc</th>
                     <th>Price</th>
-                    <th>Quantity</th>
+                    <th>Qty</th>
                     <th>Total</th>
                 </tr>
                 </thead>
@@ -120,7 +124,7 @@
                     <td>
                         <div class="row">
                             <div class="col-2">{{rec:thumbnail:imgsrc:class="w-100"}}</div>
-                            <div class="col-10 overflow-hidden">{{rec:description}} - {{rec:sku:upper}}</div>
+                            <div class="col-10"><span class="d-none d-lg-block">{{rec:description}}</span> {{rec:sku:upper}}</div>
                         </div>
                     </td>
                     <td class="text-end">
@@ -146,27 +150,13 @@
                 </tr>
                 <tr class="small">
                     <td colspan="4" class="text-end">
-                        <div class="row justify-content-between">
-                            <div class="col-3">
-                                <input class="form-control form-control-sm m-0" id="cart-discount" placeholder="Discount Code" type="text">
-                            </div>
-                            <div class="col-2 mt-2">
-                                <span>Discount:</span>
-                            </div>
-                        </div>
+                        <span>Discount:</span>
                     </td>
                     <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
                 </tr>
                 <tr class="small">
                     <td colspan="4" class="text-end">
-                        <div class="row justify-content-between">
-                            <div class="col-3">
-                                <input class="form-control form-control-sm m-0 h-taxes-zipcode" id="cart-zipcode" placeholder="Zipcode" type="text">
-                            </div>
-                            <div class="col-2 mt-2">
-                                <span>Taxes <span class="small">(<span class="h--taxes-percentage"></span>%)</span>:</span>
-                            </div>
-                        </div>
+                        <span>Taxes <span class="small">(<span class="h--taxes-percentage"></span>%)</span>:</span>
                     </td>
                     <td class="text-end"><span class="grand-total h--totals-taxes f--money" data-f-clue="$"></span></td>
                 </tr>
@@ -238,7 +228,13 @@
         if(type === 'data'){
             switch(dataRef){
                 case 'cart':
-                    console.log('here');
+                    document.querySelectorAll('.item-remove').forEach(item => {
+                        item.addEventListener('click', function() {
+                            // Add the item to the cart
+                            const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-cart'), 0)));
+                            removeItemFromCart(itemRecord)
+                        });
+                    });
                     break;
                 case 'prods':
                     setTimeout(()=>{
@@ -247,13 +243,8 @@
                         });
                         // Hide the dropdown when an option is clicked
                         document.querySelectorAll('.item-add').forEach(item => {
-                            item.addEventListener('click', function() {
-                                document.getElementById('searchInput').value = 'Added!';
-                                document.getElementById('dropdownOptions').classList.add('d-none');
-                                // Add the item to the cart
-                                const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-prods'), 0)));
-                                addItemToCart(itemRecord)
-                            });
+                            item.removeEventListener('click', itemAddCleanup);
+                            item.addEventListener('click', itemAddCleanup);
                         });
                     },250)
                     break;
@@ -262,6 +253,14 @@
             //TODO
         }
         if(core.useDebugger) console.log('ud.postpaint',{dataRef, dataObj, type});
+    }
+
+    function itemAddCleanup() {
+        document.getElementById('searchInput').value = 'Added!';
+        document.getElementById('dropdownOptions').classList.add('d-none');
+        // Add the item to the cart
+        const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-prods'), 0)));
+        addItemToCart(itemRecord);
     }
 
     function filterOptions() {
@@ -276,6 +275,23 @@
             const text = item.textContent || item.innerText;
             item.style.display = text.toUpperCase().includes(input) ? "" : "none";
         });
+    }
+
+    const removeItemFromCart = (itemRecord) => {
+        const cart = core.cr.getData('cart');
+        // Check cart for item
+        const cartItems = [];
+        for (const item of cart) {
+            if(item.sku !== itemRecord.sku){
+                cartItems.push(item);
+            }
+        }
+
+        // Store the cart
+        core.cr.setData('cart', cartItems);
+
+        // Refresh the cart UX
+        refreshCart();
     }
 
     const addItemToCart = (itemRecord) => {
@@ -306,6 +322,13 @@
 
         // Refresh the cart UX
         refreshCart();
+    }
+
+    const refreshProds = () => {
+        const pocket = document.getElementById('prod-list');
+        pocket.classList.remove('core-pocketed');
+        pocket.classList.add('core-pocket');
+        pocket.innerHTML = "";
     }
 
     const refreshCart = () => {
