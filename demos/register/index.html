@@ -61,13 +61,20 @@
     </div>
 </header>
 
-<div id="cart-list" class="container mt-5 core-pocket" data-core-templates="ux-cart"></div>
+<div id="cart-list" class="container mt-3 core-pocket mb-5" data-core-templates="ux-cart"></div>
+
+<div class="m-5">&nbsp;</div>
 
 <!-- Footer Section -->
 <footer class="text-center p-3">
-    <button class="btn btn-success">Create Payment</button>
+    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Take Payment</button>
+    <ul class="dropdown-menu">
+        <li><a id="payopts-text" class="dropdown-item" href="#">By Text</a></li>
+        <li><a id="payopts-email" class="dropdown-item" href="#">By Email</a></li>
+        <li><a id="payopts-popup" class="dropdown-item" href="#">Pay Here</a></li>
+    </ul>
     <br>
-    <span class="text-secondary small mb-0 ">payopts.com &copy; <span class="h-hit-ts f-date" data-f-clue="YYYY"></span></span>
+    <span class="text-secondary small mb-0">payopts.com &copy; <span class="h-hit-ts f-date" data-f-clue="YYYY"></span></span>
 </footer>
 
 <section id="cr-data" style="display:none;">
@@ -230,6 +237,9 @@
     core.ud.postpaint = (dataRef, dataObj, type) => {
         if(type === 'data'){
             switch(dataRef){
+                case 'cart':
+                    console.log('here');
+                    break;
                 case 'prods':
                     setTimeout(()=>{
                         document.getElementById('searchInput').addEventListener('focus', function() {
