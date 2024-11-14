@@ -65,7 +65,9 @@
 
 <!-- Footer Section -->
 <footer class="text-center p-3">
-    <button class="btn btn-primary">Create Payment</button>
+    <button class="btn btn-success">Create Payment</button>
+    <br>
+    <span class="text-secondary small mb-0 ">payopts.com &copy; <span class="h-hit-ts f-date" data-f-clue="YYYY"></span></span>
 </footer>
 
 <section id="cr-data" style="display:none;">
@@ -80,7 +82,7 @@
                         {{rec:thumbnail:imgsrc:class="w-50"}}
                     </div>
                     <div class="col p-0 m-0 text-truncate">
-                        {{rec:title:upper}}
+                        {{rec:title}}
                     </div>
                     <div class="col p-0 m-0">
                         {{rec:sku:upper}}
@@ -108,7 +110,12 @@
                 <tbody>
                 <tr class="core-clone" data-core-data="cart">
                     <td>{{rec:title}}</td>
-                    <td class="overflow-hidden">{{rec:description}}</td>
+                    <td>
+                        <div class="row">
+                            <div class="col-2">{{rec:thumbnail:imgsrc:class="w-100"}}</div>
+                            <div class="col-10 overflow-hidden">{{rec:description}} - {{rec:sku:upper}}</div>
+                        </div>
+                    </td>
                     <td class="text-end">
                         {{rec:price:money:$}} <br>
                         <a href="#" class="item-remove small">Remove</a>
@@ -125,19 +132,41 @@
                 </tbody>
                 <tfoot>
                 <tr class="small">
-                    <td colspan="4" class="text-end"><span>Discount:</span></td>
-                    <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
-                </tr>
-                <tr class="small">
-                    <td colspan="4" class="text-end"><span>Subtotal:</span></td>
+                    <td colspan="4" class="text-end">
+                        <span>Subtotal:</span>
+                    </td>
                     <td class="text-end"><span class="grand-total h--totals-subtotal f--money" data-f-clue="$"></span></td>
                 </tr>
                 <tr class="small">
-                    <td colspan="4" class="text-end"><span>Taxes:</span></td>
+                    <td colspan="4" class="text-end">
+                        <div class="row justify-content-between">
+                            <div class="col-3">
+                                <input class="form-control form-control-sm m-0" id="cart-discount" placeholder="Discount Code" type="text">
+                            </div>
+                            <div class="col-2 mt-2">
+                                <span>Discount:</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
+                </tr>
+                <tr class="small">
+                    <td colspan="4" class="text-end">
+                        <div class="row justify-content-between">
+                            <div class="col-3">
+                                <input class="form-control form-control-sm m-0 h-taxes-zipcode" id="cart-zipcode" placeholder="Zipcode" type="text">
+                            </div>
+                            <div class="col-2 mt-2">
+                                <span>Taxes <span class="small">(<span class="h--taxes-percentage"></span>%)</span>:</span>
+                            </div>
+                        </div>
+                    </td>
                     <td class="text-end"><span class="grand-total h--totals-taxes f--money" data-f-clue="$"></span></td>
                 </tr>
                 <tr>
-                    <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+                    <td colspan="4" class="text-end">
+                        <strong>Grand Total:</strong>
+                    </td>
                     <td class="text-end"><strong class="grand-total h--totals-total f--money" data-f-clue="$"></strong></td>
                 </tr>
                 </tfoot>
@@ -164,6 +193,12 @@
             taxable:0,
             taxes:0,
             total:0,
+        });
+
+        core.cr.setData('taxes', {
+            zipcode:84003,
+            decimal:0.071,
+            percentage:7.1,
         });
 
         //ccSetup
@@ -280,7 +315,7 @@
         const totals = core.cr.getData('totals');
         totals.subtotal = cartTotal;
         totals.taxable  = (totals.discount * -1) + totals.subtotal;
-        totals.taxes    = totals.taxable * .071;
+        totals.taxes    = totals.taxable * core.cr.getData('taxes').decimal;
         totals.total    = totals.taxable + totals.taxes;
         core.cr.setData('totals',totals);
 
