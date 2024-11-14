@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Searchable Input Dropdown</title>
+    <title>PayOpts - Phone and In Person Cart</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -109,7 +109,10 @@
                 <tr class="core-clone" data-core-data="cart">
                     <td>{{rec:title}}</td>
                     <td class="overflow-hidden">{{rec:description}}</td>
-                    <td class="text-end">{{rec:price:money:$}}</td>
+                    <td class="text-end">
+                        {{rec:price:money:$}} <br>
+                        <a href="#" class="item-remove small">Remove</a>
+                    </td>
                     <td>
                         <div class="input-group input-group-sm quantity-input-group">
                             <button class="btn btn-sm btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
@@ -121,9 +124,21 @@
                 </tr>
                 </tbody>
                 <tfoot>
+                <tr class="small">
+                    <td colspan="4" class="text-end"><span>Discount:</span></td>
+                    <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
+                </tr>
+                <tr class="small">
+                    <td colspan="4" class="text-end"><span>Subtotal:</span></td>
+                    <td class="text-end"><span class="grand-total h--totals-subtotal f--money" data-f-clue="$"></span></td>
+                </tr>
+                <tr class="small">
+                    <td colspan="4" class="text-end"><span>Taxes:</span></td>
+                    <td class="text-end"><span class="grand-total h--totals-taxes f--money" data-f-clue="$"></span></td>
+                </tr>
                 <tr>
                     <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
-                    <td><strong class="grand-total h--cartTotal f--money" data-f-clue="$"></strong></td>
+                    <td class="text-end"><strong class="grand-total h--totals-total f--money" data-f-clue="$"></strong></td>
                 </tr>
                 </tfoot>
             </table>
@@ -141,6 +156,14 @@
         core.cr.setData('hit', {
             ts:core.hf.date(null,'ts'),
             YYYY:core.hf.date(null,'YYYY')
+        });
+
+        core.cr.setData('totals', {
+            discount:0,
+            subtotal:0,
+            taxable:0,
+            taxes:0,
+            total:0,
         });
 
         //ccSetup
@@ -252,7 +275,14 @@
         for (const item of cart) {
             cartTotal+= +item.total;
         }
-        core.cr.setData('cartTotal', cartTotal);
+
+        // Calculate & Store the totals
+        const totals = core.cr.getData('totals');
+        totals.subtotal = cartTotal;
+        totals.taxable  = (totals.discount * -1) + totals.subtotal;
+        totals.taxes    = totals.taxable * .071;
+        totals.total    = totals.taxable + totals.taxes;
+        core.cr.setData('totals',totals);
 
         core.pk.init();
     }
