@@ -522,7 +522,7 @@
         } else {
             input.value = '';
             core.cr.setData('paymentphone', check.value);
-            core.cr.setData('paymentaccount', check.value);
+            core.cr.setData('paymentaccount', core.hf.uuid());
             core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
             startPayment(paymentPhone);
         }
@@ -537,7 +537,7 @@
         } else {
             input.value = '';
             core.cr.setData('paymentemail', check.value);
-            core.cr.setData('paymentaccount', check.value);
+            core.cr.setData('paymentaccount', core.hf.uuid());
             core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
             startPayment(paymentEmail);
         }
