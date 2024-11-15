@@ -111,7 +111,7 @@
             </div>
         </li>
         <li><hr class="dropdown-divider"></li>
-        <li>
+        <li class="d-none">
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="cart-discount-value" title="Discount Code" type="text" class="form-control" placeholder="Discount Code" aria-label="" aria-describedby="button-addon2">
@@ -129,8 +129,8 @@
         </li>
         <li>
             <div class="col p-1">
-                <a class="btn btn-sm btn-outline-danger" href="#">Reset Cart</a>
-                <button id="payopts-popup" class="btn btn-sm btn-outline-secondary" href="#">Payment Popup</button>
+                <a class="btn btn-sm btn-outline-danger" href="?reset">Reset Cart</a>
+                <a id="payopts-popup" class="btn btn-sm btn-outline-secondary" target="#modal-body" onclick="modal.show();" data-core-templates="payment-iframe">Payment Popup</a>
             </div>
         </li>
     </ul>
@@ -157,7 +157,7 @@
 <section id="cr-data" style="display:none;">
     <template name="prod-search">
         <div class="input-group">
-            <input autocomplete="off" type="text" class="form-control" id="searchInput" placeholder="Search..." onkeyup="filterOptions()">
+            <input autocomplete="off" type="text" class="form-control" id="searchInput" placeholder="Product Search..." onkeyup="filterOptions()">
         </div>
         <div class="search-dropdown d-none" id="dropdownOptions">
             <div class="core-clone search-dropdown-item" data-core-data="prods" data-core-source="https://dummyjson.com/products?limit=30">
@@ -172,11 +172,34 @@
                         {{rec:sku:upper}}
                     </div>
                     <div class="col p-0 m-0">
-                            <button type="button" class="btn btn-sm btn-outline-secondary item-add p-1">Add</button>
-                            <a href="#" class="btn" target="#modal-body" data-core-templates="EMPTY">+</a>
+                        <div class="input-group-sm">
+                            <button type="button" class="btn btn-success item-add p-1">+</button>
+                            <a href="#" class="btn btn-outline-success p-1" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail">v</a>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </template>
+    <template name="prod-detail">
+        <div class="core-clone" data-core-data="prod">
+            <div class="row">
+                <div class="col">
+                    <h3>
+                        {{rec:title}}
+                    </h3>
+                    <small class="text-secondary small">{{rec:sku}}</small>
+                    <h2>{{rec:price:money:$}}</h2>
+                </div>
+                <div class="col">
+                    <p class="text-end"><button type="button" class="btn btn-success item-add p-1">Add to Cart</button></p>
+                </div>
+            </div>
+            {{rec:thumbnail:imgsrc:class="w-100"}}
+            <p>{{rec:description}}</p>
+            <p>Shipping Info: {{rec:shippingInformation}}</p>
+            <p>Warranty: {{rec:warrantyInformation}}</p>
+            <p>Return Policy: {{rec:returnPolicy}}</p>
         </div>
     </template>
     <template name="ux-cart">
@@ -229,7 +252,7 @@
                     </td>
                     <td class="text-end"><span class="grand-total h--totals-subtotal f--money" data-f-clue="$"></span></td>
                 </tr>
-                <tr class="small">
+                <tr class="small d-none">
                     <td colspan="4" class="text-end">
                         <span>Discount:</span>
                     </td>
@@ -249,6 +272,11 @@
                 </tr>
                 </tfoot>
             </table>
+        </div>
+    </template>
+    <template name="payment-iframe">
+        <div style="width:100%; height: 545px;" id="map">
+            <iframe src="" style="border: 0" width="100%" height="545" frameborder="0"></iframe>
         </div>
     </template>
 </section>  
@@ -336,7 +364,16 @@
         if(core.useDebugger) console.log('ud.postpaint',{dataRef, dataObj, type});
     }
 
+    core.ud.prepaint = () => {}
+
     const modal = new bootstrap.Modal(document.getElementById('payopts-modal'), {});
+
+    function setClosestClone(storageName, element) {
+        const clone     = element.parentElement.closest('[class*="core-cloned"]');
+        const cloneData = core.cr.getData('coreRecord', clone, 0);
+        // Store the cart
+        core.cr.setData(storageName, [cloneData]);
+    }
 
     function itemAddCleanup() {
         document.getElementById('searchInput').value = 'Added!';
@@ -463,6 +500,76 @@
         const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
         itemRecord.quantity = +input.value;
         addItemToCart(itemRecord);
+    }
+
+    document.getElementById('payopts-text-action').addEventListener('click',() => {
+        const input = document.getElementById('payopts-text-value');
+        const check = core.sv.scrubSimple('check',input.value,['req','num','min-10','max-10','phone','numonly']);
+        if(!check.success){
+            alert(check.errors.join('\r'));
+            input.focus();
+        } else {
+            input.value = '';
+            core.cr.setData('paymentphone', check.value);
+            core.cr.setData('paymentaccount', check.value);
+            core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
+            startPayment(paymentPhone);
+        }
+    })
+
+    document.getElementById('payopts-email-action').addEventListener('click',() => {
+        const input = document.getElementById('payopts-email-value');
+        const check = core.sv.scrubSimple('check',input.value,['req','email']);
+        if(!check.success){
+            alert(check.errors.join('\r'));
+            input.focus();
+        } else {
+            input.value = '';
+            core.cr.setData('paymentemail', check.value);
+            core.cr.setData('paymentaccount', check.value);
+            core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
+            startPayment(paymentEmail);
+        }
+    })
+
+    let paymentEmail  = 'https://tco.zzzap.io/Sequence/29805dd/asJSON?account={{account}}&amount={{amount}}&email={{email}}&PublicAuthCd=zCd-ae40173-bed24f676a88cb060ee8ef303'
+    let paymentPhone  = 'https://tco.zzzap.io/Sequence/d7d22e0/asJSON?account={{account}}&amount={{amount}}&phone={{phone}}&PublicAuthCd=zCd-a266-ebe-dcfc8ec6c334d9-bfcf17be15e'
+    let paymentIframe = 'https://tco.zzzap.io/Sequence/3a892ac/asJSON?account={{account}}&amount={{amount}}&PublicAuthCd=zCd-214de0c9d1-dbe481-cabf4c6d117b0238'
+
+    const startPayment = function(sequenceLink){
+        if(!sequenceLink){
+            alert('Payment link not provided!')
+            return;
+        }
+        if(!core.cr.getData('paymentamount')){
+            alert('Payment amount not provided!')
+            return;
+        }
+        overlayShowHide(true);
+        let paymentLink = sequenceLink;
+        sequenceLink.match(/[^{\{]+(?=}\})/g).forEach(function (placeholder) {
+            // Pull the data
+            let val = (core.cr.getData('payment' + placeholder) || prompt("What is the " + placeholder.toUpperCase() + "?",''));
+            // Create the actual payment link
+            paymentLink = paymentLink.replace("{{" + placeholder + "}}", val);
+        })
+
+        console.log(paymentLink);
+
+        // if(sequenceLink === paymentIframe){
+        //     $('a[href*=contact]').eq(0).trigger('click');
+        //     $('#contact').find('iframe').attr('src',paymentLink.split('/asJSON').join('')).end()
+        //         .find('.contact-left').addClass('col-lg-12').removeClass('col-lg-4').end()
+        //         .find('.contact-right').hide();
+        // }else{
+        //     pckt.getData(paymentLink);
+        // }
+
+        // Remove the payment data
+        core.cr.delData('paymentemail');
+        core.cr.delData('paymentphone');
+        core.cr.delData('paymentaccount');
+        //overlayShowHide(false);
     }
 
 </script>
