@@ -6,6 +6,7 @@
     <title>PayOpts - Phone and In Person Cart</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Style for Sticky Header */
         .sticky-header {
@@ -72,7 +73,11 @@
 <body>
 
 <div id="overlay" class="overlay d-none">
-    <div class="overlay-content">Processing...</div>
+    <div class="overlay-content text-center">
+        Processing <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <br>
+        <smallxx class="small"><button class="btn btn-sm btn-danger" onclick="endPayment()">STOP <i class="fa-solid fa-hand"></i></button></smallxx>
+    </div>
 </div>
 
 <!-- Sticky Header Section -->
@@ -98,7 +103,7 @@
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="payopts-text-value" title="SMS Number" type="text" class="form-control" placeholder="SMS Number" aria-label="" aria-describedby="button-addon2">
-                    <button class="btn btn-success" type="button" id="payopts-text-action">&gt;</button>
+                    <button class="btn btn-success" type="button" id="payopts-text-action"><i class="fa-solid fa-fw fa-mobile"></i></button>
                 </div>
             </div>
         </li>
@@ -106,7 +111,7 @@
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="payopts-email-value" title="Email Address" type="text" class="form-control" placeholder="Email" aria-label="" aria-describedby="button-addon2">
-                    <button class="btn btn-success" type="button" id="payopts-email-action">&gt;</button>
+                    <button class="btn btn-success" type="button" id="payopts-email-action"><i class="fa-solid fa-fw fa-at"></i></button>
                 </div>
             </div>
         </li>
@@ -119,7 +124,7 @@
                 </div>
             </div>
         </li>
-        <li>
+        <li class="d-none">
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="cart-zipcode-value" title="Tax Zipcode" type="text" class="form-control h-taxes-zipcode" placeholder="Zipcode" aria-label="" aria-describedby="button-addon2">
@@ -129,8 +134,8 @@
         </li>
         <li>
             <div class="col p-1">
-                <a class="btn btn-sm btn-outline-danger" href="?reset">Reset Cart</a>
-                <a id="payopts-popup" class="btn btn-sm btn-outline-secondary" target="#modal-body" onclick="modal.show();" data-core-templates="payment-iframe">Payment Popup</a>
+                <a class="btn btn-sm btn-outline-danger" href="?reset"><i class="fa-solid fa-arrows-rotate"></i> Reset Cart</a>
+                <a id="payopts-popup" class="btn btn-sm btn-outline-secondary" target="#modal-body" onclick="iframePayment()" data-core-templates="payment-iframe"><i class="fa-solid fa-credit-card"></i> Payment Popup</a>
             </div>
         </li>
     </ul>
@@ -173,8 +178,8 @@
                     </div>
                     <div class="col p-0 m-0">
                         <div class="input-group-sm">
-                            <button type="button" class="btn btn-success item-add p-1">+</button>
-                            <a href="#" class="btn btn-outline-success p-1" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail">v</a>
+                            <a href="#" class="btn btn-secondary p-1" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail"><i class="fa-solid fa-fw fa-ellipsis-vertical fa-xs"></i></a>
+                            <button type="button" class="btn btn-success p-1" onclick="itemAddCleanup(setClosestClone('item',this))"><i class="fa-solid fa-fw fa-plus fa-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -192,7 +197,7 @@
                     <h2>{{rec:price:money:$}}</h2>
                 </div>
                 <div class="col">
-                    <p class="text-end"><button type="button" class="btn btn-success item-add p-1">Add to Cart</button></p>
+                    <p class="text-end"><button type="button" class="btn btn-success item-add" onclick="itemAddCleanup(setClosestClone('item',this))"><i class="fa-solid fa-fw fa-plus fa-beat" style="--fa-animation-duration: 2s;"></i> Add to Cart</button></p>
                 </div>
             </div>
             {{rec:thumbnail:imgsrc:class="w-100"}}
@@ -204,7 +209,8 @@
     </template>
     <template name="ux-cart">
         <div class="container mt-4">
-            <h2 class="text-center">PayOpts Add & Pay</h2>
+            <h2 class="text-center">PayOpts Cart & Pay</h2>
+            <h6 class="text-center">For Phone and Offsite Orders</h6>
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                 <tr>
@@ -233,7 +239,7 @@
                     </td>
                     <td class="text-end">
                         {{rec:price:money:$}} <br>
-                        <a href="#" class="item-remove small">Remove</a>
+                        <a href="#" class="small" onclick="removeItemFromCart(setClosestClone('removed',this))">Remove</a>
                     </td>
                     <td>
                         <div class="input-group input-group-sm quantity-input-group">
@@ -276,7 +282,7 @@
     </template>
     <template name="payment-iframe">
         <div style="width:100%; height: 545px;" id="map">
-            <iframe src="" style="border: 0" width="100%" height="545" frameborder="0"></iframe>
+            <iframe id="payopts-iframe" src="" style="border: 0" width="100%" height="545" frameborder="0"></iframe>
         </div>
     </template>
 </section>  
@@ -325,6 +331,18 @@
                 case 'prods':
                     dataObj = dataObj.products;
                     break;
+                case 'payopts-report':
+                    if(dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
+                        // Payment processed
+                        alert('Payment successful!');
+                        overlayDisplay(false);
+                    } else {
+                        // Request payment report
+                        setTimeout(() => {
+                            core.be.getData('payopts-report', core.cr.getData('payopts-report-link'));
+                        },5000);
+                    }
+                    break;
             }
         }else{
             //TODO
@@ -337,23 +355,11 @@
         if(type === 'data'){
             switch(dataRef){
                 case 'cart':
-                    document.querySelectorAll('.item-remove').forEach(item => {
-                        item.addEventListener('click', function() {
-                            // Add the item to the cart
-                            const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-cart'), 0)));
-                            removeItemFromCart(itemRecord)
-                        });
-                    });
                     break;
                 case 'prods':
                     setTimeout(()=>{
                         document.getElementById('searchInput').addEventListener('focus', function() {
                             this.value = '';
-                        });
-                        // Hide the dropdown when an option is clicked
-                        document.querySelectorAll('.item-add').forEach(item => {
-                            item.removeEventListener('click', itemAddCleanup);
-                            item.addEventListener('click', itemAddCleanup);
                         });
                     },250)
                     break;
@@ -370,16 +376,17 @@
 
     function setClosestClone(storageName, element) {
         const clone     = element.parentElement.closest('[class*="core-cloned"]');
-        const cloneData = core.cr.getData('coreRecord', clone, 0);
+        const cloneData = core.cr.getData('coreRecord', clone, 0) || {};
         // Store the cart
         core.cr.setData(storageName, [cloneData]);
+        return cloneData;
     }
 
-    function itemAddCleanup() {
+    function itemAddCleanup(itemRecord) {
         document.getElementById('searchInput').value = 'Added!';
         document.getElementById('dropdownOptions').classList.add('d-none');
         // Add the item to the cart
-        const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-prods'), 0)));
+        itemRecord = itemRecord || JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-prods'), 0)));
         addItemToCart(itemRecord);
     }
 
@@ -452,6 +459,9 @@
     }
 
     const refreshCart = () => {
+        // Close the modal, cleanup
+        modal.hide();
+
         const pocket = document.getElementById('cart-list');
         pocket.classList.remove('core-pocketed');
         pocket.classList.add('core-pocket');
@@ -483,7 +493,7 @@
         addItemToCart(itemRecord);
     }
 
-    function overlayShowHide(show) {
+    function overlayDisplay(show) {
         const overlay = document.getElementById('overlay');
         if(show) {
             overlay.classList.remove('d-none');
@@ -532,6 +542,12 @@
         }
     })
 
+    const iframePayment = () => {
+        core.cr.setData('paymentaccount', core.hf.uuid());
+        core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
+        startPayment(paymentIframe);
+    }
+
     let paymentEmail  = 'https://tco.zzzap.io/Sequence/29805dd/asJSON?account={{account}}&amount={{amount}}&email={{email}}&PublicAuthCd=zCd-ae40173-bed24f676a88cb060ee8ef303'
     let paymentPhone  = 'https://tco.zzzap.io/Sequence/d7d22e0/asJSON?account={{account}}&amount={{amount}}&phone={{phone}}&PublicAuthCd=zCd-a266-ebe-dcfc8ec6c334d9-bfcf17be15e'
     let paymentIframe = 'https://tco.zzzap.io/Sequence/3a892ac/asJSON?account={{account}}&amount={{amount}}&PublicAuthCd=zCd-214de0c9d1-dbe481-cabf4c6d117b0238'
@@ -541,11 +557,11 @@
             alert('Payment link not provided!')
             return;
         }
-        if(!core.cr.getData('paymentamount')){
+        if(!+core.cr.getData('paymentamount')){
             alert('Payment amount not provided!')
             return;
         }
-        overlayShowHide(true);
+        overlayDisplay(true);
         let paymentLink = sequenceLink;
         sequenceLink.match(/[^{\{]+(?=}\})/g).forEach(function (placeholder) {
             // Pull the data
@@ -554,22 +570,31 @@
             paymentLink = paymentLink.replace("{{" + placeholder + "}}", val);
         })
 
-        console.log(paymentLink);
+        if(sequenceLink === paymentIframe){
+            overlayDisplay(false);
+            modal.show();
+            //paymentLink = paymentLink.split('/asJSON').join('');
+            paymentLink = "https://zzzap.io/";
+            setTimeout(() => {
+                document.getElementById('payopts-iframe').setAttribute('src', paymentLink);
+            },500)
+        }else{
+            core.cr.setData('payopts-report-link', paymentLink);
+            core.be.getData('payopts-report', core.cr.getData('payopts-report-link'));
+        }
 
-        // if(sequenceLink === paymentIframe){
-        //     $('a[href*=contact]').eq(0).trigger('click');
-        //     $('#contact').find('iframe').attr('src',paymentLink.split('/asJSON').join('')).end()
-        //         .find('.contact-left').addClass('col-lg-12').removeClass('col-lg-4').end()
-        //         .find('.contact-right').hide();
-        // }else{
-        //     pckt.getData(paymentLink);
-        // }
+        console.log(paymentLink);
 
         // Remove the payment data
         core.cr.delData('paymentemail');
         core.cr.delData('paymentphone');
         core.cr.delData('paymentaccount');
-        //overlayShowHide(false);
+    }
+
+    const endPayment = () => {
+        modal.hide();
+        overlayDisplay(false);
+        core.cr.delData('payopts-report-link');
     }
 
 </script>
