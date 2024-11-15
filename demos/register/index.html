@@ -331,15 +331,15 @@
                 case 'prods':
                     dataObj = dataObj.products;
                     break;
-                case 'payopts-report':
-                    if(dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
+                case 'payoptsreport':
+                    if(data.hasOwnProperty('reponse') && dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
                         // Payment processed
+                        endPayment();
                         alert('Payment successful!');
-                        overlayDisplay(false);
                     } else {
                         // Request payment report
                         setTimeout(() => {
-                            core.be.getData('payopts-report', core.cr.getData('payopts-report-link'));
+                            core.be.getData('payoptsreport', core.cr.getData('payoptsreportlink'));
                         },5000);
                     }
                     break;
@@ -386,7 +386,6 @@
         document.getElementById('searchInput').value = 'Added!';
         document.getElementById('dropdownOptions').classList.add('d-none');
         // Add the item to the cart
-        itemRecord = itemRecord || JSON.parse(JSON.stringify(core.cr.getData('coreRecord', this.parentElement.closest('.core-cloned-prods'), 0)));
         addItemToCart(itemRecord);
     }
 
@@ -573,17 +572,14 @@
         if(sequenceLink === paymentIframe){
             overlayDisplay(false);
             modal.show();
-            //paymentLink = paymentLink.split('/asJSON').join('');
-            paymentLink = "https://zzzap.io/";
+            paymentLink = paymentLink.split('/asJSON').join('');
             setTimeout(() => {
                 document.getElementById('payopts-iframe').setAttribute('src', paymentLink);
             },500)
         }else{
-            core.cr.setData('payopts-report-link', paymentLink);
-            core.be.getData('payopts-report', core.cr.getData('payopts-report-link'));
+            core.cr.setData('payoptsreportlink', paymentLink);
+            core.be.getData('payoptsreport', core.cr.getData('payoptsreportlink'));
         }
-
-        console.log(paymentLink);
 
         // Remove the payment data
         core.cr.delData('paymentemail');
@@ -594,7 +590,12 @@
     const endPayment = () => {
         modal.hide();
         overlayDisplay(false);
-        core.cr.delData('payopts-report-link');
+
+        // Remove the payment data
+        core.cr.delData('payoptsreportlink');
+        core.cr.delData('paymentemail');
+        core.cr.delData('paymentphone');
+        core.cr.delData('paymentaccount');
     }
 
 </script>
