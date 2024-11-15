@@ -99,11 +99,13 @@
 <footer class="text-center p-3">
     <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Payment Options</button>
     <ul class="dropdown-menu bg-light">
+        <li class="text-center"><span class="dropdown-item">Pay by Text or Email</span></li>
+        <li><hr class="dropdown-divider"></li>
         <li>
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="payopts-text-value" title="SMS Number" type="text" class="form-control" placeholder="SMS Number" aria-label="" aria-describedby="button-addon2">
-                    <button class="btn btn-success" type="button" id="payopts-text-action"><i class="fa-solid fa-fw fa-mobile"></i></button>
+                    <button class="btn btn-success" type="button" id="payopts-text-action">Send <i class="fa-solid fa-fw fa-mobile"></i></button>
                 </div>
             </div>
         </li>
@@ -111,7 +113,7 @@
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="payopts-email-value" title="Email Address" type="text" class="form-control" placeholder="Email" aria-label="" aria-describedby="button-addon2">
-                    <button class="btn btn-success" type="button" id="payopts-email-action"><i class="fa-solid fa-fw fa-at"></i></button>
+                    <button class="btn btn-success" type="button" id="payopts-email-action">Send <i class="fa-solid fa-fw fa-at"></i></button>
                 </div>
             </div>
         </li>
