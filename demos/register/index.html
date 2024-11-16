@@ -71,7 +71,7 @@
     </style>
 </head>
 <body>
-
+<!-- Overlay -->
 <div id="overlay" class="overlay d-none">
     <div class="overlay-content text-center">
         Processing <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -82,6 +82,7 @@
 
 <!-- Sticky Header Section -->
 <header class="sticky-header text-center">
+    <h3 class="text-center">PayOpts Phone & Offsite</h3>
     <div class="container">
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
@@ -91,9 +92,14 @@
     </div>
 </header>
 
+<!-- Offers -->
+<div id="promotion-list" class="container mt-3 core-pocket" data-core-templates="ux-promotions"></div>
+
+<!-- Cart -->
 <div id="cart-list" class="container mt-3 core-pocket mb-5" data-core-templates="ux-cart"></div>
 
-<div class="m-5">&nbsp;</div>
+<!-- Spacer -->
+<div class="mb-5">&nbsp;</div>
 
 <!-- Footer Section -->
 <footer class="text-center p-3">
@@ -118,7 +124,7 @@
             </div>
         </li>
         <li><hr class="dropdown-divider"></li>
-        <li class="d-none">
+        <li class="">
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="cart-discount-value" title="Discount Code" type="text" class="form-control" placeholder="Discount Code" aria-label="" aria-describedby="button-addon2">
@@ -126,7 +132,7 @@
                 </div>
             </div>
         </li>
-        <li class="d-none">
+        <li class="">
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="cart-zipcode-value" title="Tax Zipcode" type="text" class="form-control h-taxes-zipcode" placeholder="Zipcode" aria-label="" aria-describedby="button-addon2">
@@ -211,8 +217,6 @@
     </template>
     <template name="ux-cart">
         <div class="container mt-4">
-            <h2 class="text-center">PayOpts Cart & Pay</h2>
-            <h6 class="text-center">For Phone and Offsite Orders</h6>
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                 <tr>
@@ -242,6 +246,7 @@
                     <td class="text-end">
                         {{rec:price:money:$}} <br>
                         <a href="#" class="small" onclick="removeItemFromCart(setClosestClone('removed',this))">Remove</a>
+                        <a href="#" class="small" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail">View</a>
                     </td>
                     <td>
                         <div class="input-group input-group-sm quantity-input-group">
@@ -260,7 +265,7 @@
                     </td>
                     <td class="text-end"><span class="grand-total h--totals-subtotal f--money" data-f-clue="$"></span></td>
                 </tr>
-                <tr class="small d-none">
+                <tr class="small">
                     <td colspan="4" class="text-end">
                         <span>Discount:</span>
                     </td>
@@ -280,6 +285,13 @@
                 </tr>
                 </tfoot>
             </table>
+        </div>
+    </template>
+    <template name="ux-promotions">
+        <div class="form-control-sm">
+            <button class="btn btn-outline-secondary core-clone" data-core-data="promos" data-core-source="https://dummyjson.com/products/search?q=phone&limit=6" onclick="addItemsToCart(setClosestClone('promo',this).prods)">
+                #{{aug:count:padleft:2|0}} - {{rec:name:upper}}
+            </button>
         </div>
     </template>
     <template name="payment-iframe">
@@ -333,6 +345,13 @@
                 case 'prods':
                     dataObj = dataObj.products;
                     break;
+                case 'promos':
+                    dataObj = [
+                        {name:"Starter Pak",prods:[dataObj.products[0],dataObj.products[1],dataObj.products[2]]},
+                        {name:"Monthly Pak",prods:[dataObj.products[3],dataObj.products[4]]},
+                        {name:"Seasonal Pak",prods:[dataObj.products[5]]},
+                    ];
+                    break;
                 case 'payoptsreport':
                     if(data.hasOwnProperty('reponse') && dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
                         // Payment processed
@@ -377,7 +396,7 @@
     const modal = new bootstrap.Modal(document.getElementById('payopts-modal'), {});
 
     function setClosestClone(storageName, element) {
-        const clone     = element.parentElement.closest('[class*="core-cloned"]');
+        const clone     = element.parentElement.closest('[class*="core-cloned"]') || element;
         const cloneData = core.cr.getData('coreRecord', clone, 0) || {};
         // Store the cart
         core.cr.setData(storageName, [cloneData]);
@@ -386,9 +405,14 @@
 
     function itemAddCleanup(itemRecord) {
         document.getElementById('searchInput').value = 'Added!';
+        setTimeout(() => {
+            if(document.getElementById('searchInput').value === 'Added!'){
+                document.getElementById('searchInput').value = '';
+            }
+        },2500)
         document.getElementById('dropdownOptions').classList.add('d-none');
         // Add the item to the cart
-        addItemToCart(itemRecord);
+        updateCartItem(itemRecord);
     }
 
     function filterOptions() {
@@ -422,23 +446,30 @@
         refreshCart();
     }
 
-    const addItemToCart = (itemRecord) => {
+    let runRefreshCart = true;
+
+    const addItemsToCart = (items) => {
+        for(const itemRecord of items){
+            updateCartItem(itemRecord);
+        }
+    }
+
+    const updateCartItem = (itemRecord, increase = true) => {
+        itemRecord = JSON.parse(JSON.stringify(itemRecord));
         const cart = core.cr.getData('cart');
-        // Check cart for item
+        // Check cart for item, update
         let itemInCart = false;
         for (const item of cart) {
             if(item.sku === itemRecord.sku){
-                itemInCart = true;
-                if(itemRecord.hasOwnProperty('quantity')){
-                    item.quantity = itemRecord.quantity;
-                }else{
-                    item.quantity = item.quantity + 1;
-                }
-                item.total = item.quantity * +item.price;
+                itemInCart    = true;
+                item.quantity = (item.quantity || 0) + (increase ? 1 : -1);
+                item.total    = item.quantity * +item.price;
             }
+            //if(!item.quantity){
+                //delete cart[];
+            //}
         }
-
-        // Add new item
+        // Add new item, update
         if(!itemInCart){
             itemRecord.quantity = itemRecord.quantity || 1;
             itemRecord.total    = itemRecord.quantity * +itemRecord.price;
@@ -459,39 +490,40 @@
         pocket.innerHTML = "";
     }
 
-    const refreshCart = () => {
-        // Close the modal, cleanup
-        modal.hide();
+    const refreshCart = (delay) => {
+        if(!runRefreshCart){
+            return;
+        } else {
+            runRefreshCart = false;
+            setTimeout(() => {
+                // Close the modal, cleanup
+                modal.hide();
 
-        const pocket = document.getElementById('cart-list');
-        pocket.classList.remove('core-pocketed');
-        pocket.classList.add('core-pocket');
-        pocket.innerHTML = "";
+                const pocket = document.getElementById('cart-list');
+                pocket.classList.remove('core-pocketed');
+                pocket.classList.add('core-pocket');
+                pocket.innerHTML = "";
 
-        // Total the cart
-        const cart = core.cr.getData('cart');
-        let cartTotal = 0;
-        for (const item of cart) {
-            cartTotal+= +item.total;
+                // Total the cart
+                const cart = core.cr.getData('cart');
+                let cartTotal = 0;
+                for (const item of cart) {
+                    cartTotal+= +item.total;
+                }
+
+                // Calculate & Store the totals
+                const totals    = core.cr.getData('totals');
+                totals.subtotal = cartTotal;
+                totals.taxable  = (totals.discount * -1) + totals.subtotal;
+                totals.taxes    = totals.taxable * core.cr.getData('taxes').decimal;
+                totals.total    = totals.taxable + totals.taxes;
+                core.cr.setData('totals',totals);
+
+                core.pk.init();
+                // Ready to run after delay
+                runRefreshCart = true;
+            },(delay || 250))
         }
-
-        // Calculate & Store the totals
-        const totals = core.cr.getData('totals');
-        totals.subtotal = cartTotal;
-        totals.taxable  = (totals.discount * -1) + totals.subtotal;
-        totals.taxes    = totals.taxable * core.cr.getData('taxes').decimal;
-        totals.total    = totals.taxable + totals.taxes;
-        core.cr.setData('totals',totals);
-
-        core.pk.init();
-    }
-
-    function increaseQuantity(button) {
-        const input = button.parentElement.querySelector('.quantity-input');
-        input.value = parseInt(input.value) + 1;
-        const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
-        itemRecord.quantity = +input.value;
-        addItemToCart(itemRecord);
     }
 
     function overlayDisplay(show) {
@@ -503,14 +535,24 @@
         }
     }
 
+    function increaseQuantity(button) {
+        const input = button.parentElement.querySelector('.quantity-input');
+        input.value = parseInt(input.value) + 1;
+        const itemRecord = core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0);
+        // const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
+        // itemRecord.quantity = +input.value;
+        updateCartItem(itemRecord);
+    }
+
     function decreaseQuantity(button) {
         const input = button.parentElement.querySelector('.quantity-input');
         if (parseInt(input.value) > 1) {
             input.value = parseInt(input.value) - 1;
         }
-        const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
-        itemRecord.quantity = +input.value;
-        addItemToCart(itemRecord);
+        const itemRecord = core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0);
+        // const itemRecord = JSON.parse(JSON.stringify(core.cr.getData('coreRecord', input.parentElement.closest('.core-cloned-cart'), 0)));
+        // itemRecord.quantity = +input.value;
+        updateCartItem(itemRecord, false);
     }
 
     document.getElementById('payopts-text-action').addEventListener('click',() => {
@@ -553,7 +595,7 @@
     let paymentPhone  = 'https://tco.zzzap.io/Sequence/d7d22e0/asJSON?account={{account}}&amount={{amount}}&phone={{phone}}&PublicAuthCd=zCd-a266-ebe-dcfc8ec6c334d9-bfcf17be15e'
     let paymentIframe = 'https://tco.zzzap.io/Sequence/3a892ac/asJSON?account={{account}}&amount={{amount}}&PublicAuthCd=zCd-214de0c9d1-dbe481-cabf4c6d117b0238'
 
-    const startPayment = function(sequenceLink){
+    const startPayment = (sequenceLink) => {
         if(!sequenceLink){
             alert('Payment link not provided!')
             return;
