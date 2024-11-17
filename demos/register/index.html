@@ -465,9 +465,11 @@
                 item.quantity = (item.quantity || 0) + (increase ? 1 : -1);
                 item.total    = item.quantity * +item.price;
             }
-            //if(!item.quantity){
-                //delete cart[];
-            //}
+            if(!item.quantity){
+                setTimeout(()=>{
+                    removeItemFromCart(item);
+                })
+            }
         }
         // Add new item, update
         if(!itemInCart){
