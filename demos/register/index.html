@@ -178,7 +178,7 @@
 
 <section id="cr-data" style="display:none;">
     <template name="input-accounts">
-        <select id="payopts-account-value" title="Account" class="form-control" aria-label="" aria-describedby="button-addon2">
+        <select id="payopts-account-value" onchange="setClosestClone('account',this.options[this.selectedIndex])" title="Account" class="form-control" aria-label="" aria-describedby="button-addon2">
             <option value="">Choose Account</option>
             <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:lastName}}, {{rec:firstName}} {{rec:ein}}</option>
         </select>
