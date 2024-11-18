@@ -96,9 +96,13 @@
 <div id="promotion-list" class="container mt-3 core-pocket" data-core-templates="ux-promotions"></div>
 
 <!-- Cart -->
-<div id="cart-list" class="container mt-3 core-pocket mb-5" data-core-templates="ux-cart"></div>
+<div id="cart-list" class="container core-pocket" data-core-templates="ux-cart"></div>
+
+<!-- Discounts -->
+<div id="discount-list" class="container core-pocket" data-core-templates="ux-discounts"></div>
 
 <!-- Spacer -->
+<div class="mb-5">&nbsp;</div>
 <div class="mb-5">&nbsp;</div>
 
 <!-- Footer Section -->
@@ -142,7 +146,7 @@
         </li>
         <li>
             <div class="col p-1">
-                <a class="btn btn-sm btn-outline-danger" href="?reset"><i class="fa-solid fa-arrows-rotate"></i> Reset Cart</a>
+                <a class="btn btn-sm btn-outline-danger" href="#" onclick="removeItemsFromCart(core.cr.getData('cart'))"><i class="fa-solid fa-arrows-rotate"></i> Reset Cart</a>
                 <a id="payopts-popup" class="btn btn-sm btn-outline-secondary" target="#modal-body" onclick="iframePayment()" data-core-templates="payment-iframe"><i class="fa-solid fa-credit-card"></i> Payment Popup</a>
             </div>
         </li>
@@ -290,7 +294,14 @@
     <template name="ux-promotions">
         <div class="form-control-sm">
             <button class="btn btn-outline-secondary core-clone" data-core-data="promos" data-core-source="https://dummyjson.com/products/search?q=phone&limit=6" onclick="addItemsToCart(setClosestClone('promo',this).prods)">
-                #{{aug:count:padleft:2|0}} - {{rec:name:upper}}
+                #{{aug:count:padleft:2|0}} - {{rec:name}}
+            </button>
+        </div>
+    </template>
+    <template name="ux-discounts">
+        <div class="form-control-sm">
+            <button class="btn btn-link core-clone" title="{{rec:description}}" data-core-data="discounts" onclick="core.cr.setData('discount', setClosestClone('discount',this));refreshCart();">
+                {{rec:name}}
             </button>
         </div>
     </template>
@@ -327,7 +338,7 @@
             percentage:7.2,
         });
 
-        //ccSetup
+        //ccSetup, not used
         let ccYYYY = [];
         [0,1,2,3,4,5,6].forEach((i)=>{
         ccYYYY.push({'YYYY':+core.cr.getData('hit').YYYY + i});
@@ -337,6 +348,22 @@
         core.cr.setData('ccMM', ccMM);
         core.cr.setData('cart', []);
         core.useDebugger = true;
+
+        // testing
+        const discounts = [];
+        for(const i of new Array(3).fill(1)){
+            let num = discounts.length + 1;
+            let discount   = core.cr.getData('coreInternalObjects').discount;//JSON.parse(JSON.stringify(discountObj));
+            discount.name  = "Super Saver " + (5 * num);
+            discount.guid  = core.hf.uuid();
+            discount.dateStart = core.hf.date();
+            discount.dateEnd   = core.hf.date(core.hf.date(null,'TS') + (86400 * 2));
+            discount.description   = "Save " + (5 * num) + "% on everything in the store.";
+            discount.percentAmount = (.05 * num);
+            discounts.push(discount);
+        }
+
+        core.cr.setData('discounts', discounts);
     }
 
     core.ud.postflight = (dataRef, dataObj, type) => {
@@ -428,6 +455,12 @@
             item.style.display = text.toUpperCase().includes(input) ? "" : "none";
         });
     }
+    
+    const removeItemsFromCart = (items) => {
+        for(const itemRecord of items){
+            removeItemFromCart(itemRecord);
+        }
+    }
 
     const removeItemFromCart = (itemRecord) => {
         const cart = core.cr.getData('cart');
@@ -492,7 +525,7 @@
         pocket.innerHTML = "";
     }
 
-    const refreshCart = (delay) => {
+    const refreshCart = (pause) => {
         if(!runRefreshCart){
             return;
         } else {
@@ -516,6 +549,7 @@
                 // Calculate & Store the totals
                 const totals    = core.cr.getData('totals');
                 totals.subtotal = cartTotal;
+                totals.discount = applyDiscount(totals.subtotal);
                 totals.taxable  = (totals.discount * -1) + totals.subtotal;
                 totals.taxes    = totals.taxable * core.cr.getData('taxes').decimal;
                 totals.total    = totals.taxable + totals.taxes;
@@ -524,8 +558,25 @@
                 core.pk.init();
                 // Ready to run after delay
                 runRefreshCart = true;
-            },(delay || 250))
+            },(pause || 250))
         }
+    }
+
+    function applyDiscount(subtotal) {
+        const discountObj = core.cr.getData('discount');
+        let discount = 0;
+        if(discountObj){
+            if(!discountObj.isActive || core.hf.date(discountObj.dateStart,'ts') > core.hf.date(null,'ts') || core.hf.date(discountObj.dateEnd,'ts') < core.hf.date(null,'ts')){
+                alert('The ' + discountObj.type + ' is not active.')
+            }else{
+                if(discountObj.currencyAmount){
+                    discount = subtotal - discountObj.currencyAmount;
+                }else if(discountObj.percentAmount){
+                    discount = subtotal * discountObj.percentAmount;
+                }
+            }
+        }
+        return (discount < 0 ? 0 : discount);
     }
 
     function overlayDisplay(show) {
