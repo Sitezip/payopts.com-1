@@ -113,11 +113,7 @@
         <li><hr class="dropdown-divider"></li>
         <li>
             <div class="col p-1">
-                <div class="input-group input-group-sm">
-                    <select id="payopts-account-value" title="Account" class="form-control" aria-label="" aria-describedby="button-addon2">
-                        <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:firstName}} {{rec:lastName}}</option>
-                    </select>
-                </div>
+                <div class="input-group input-group-sm core-pocket" data-core-templates="input-accounts"></div>
             </div>
         </li>
         <li>
@@ -181,6 +177,12 @@
 </div>
 
 <section id="cr-data" style="display:none;">
+    <template name="input-accounts">
+        <select id="payopts-account-value" title="Account" class="form-control" aria-label="" aria-describedby="button-addon2">
+            <option value="">Choose Account</option>
+            <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:lastName}}, {{rec:firstName}} {{rec:ein}}</option>
+        </select>
+    </template>
     <template name="prod-search">
         <div class="input-group">
             <input autocomplete="off" type="text" class="form-control" id="searchInput" placeholder="Product Search..." onkeyup="filterOptions()">
