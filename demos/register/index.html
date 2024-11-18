@@ -114,6 +114,15 @@
         <li>
             <div class="col p-1">
                 <div class="input-group input-group-sm">
+                    <select id="payopts-account-value" title="Account" class="form-control" aria-label="" aria-describedby="button-addon2">
+                        <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:firstName}} {{rec:lastName}}</option>
+                    </select>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="col p-1">
+                <div class="input-group input-group-sm">
                     <input id="payopts-text-value" title="SMS Number" type="text" class="form-control" placeholder="SMS Number" aria-label="" aria-describedby="button-addon2">
                     <button class="btn btn-success" type="button" id="payopts-text-action">Send <i class="fa-solid fa-fw fa-mobile"></i></button>
                 </div>
@@ -271,7 +280,7 @@
                 </tr>
                 <tr class="small">
                     <td colspan="4" class="text-end">
-                        <span>Discount:</span>
+                        <span>Discount <span class="small">(<span class="h--discount-name"></span>)</span>:</span>
                     </td>
                     <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
                 </tr>
@@ -369,6 +378,9 @@
     core.ud.postflight = (dataRef, dataObj, type) => {
         if(type === 'data'){
             switch(dataRef){
+                case 'accounts':
+                    dataObj = dataObj.users;
+                    break;
                 case 'prods':
                     dataObj = dataObj.products;
                     break;
@@ -551,7 +563,7 @@
                 totals.subtotal = cartTotal;
                 totals.discount = applyDiscount(totals.subtotal);
                 totals.taxable  = (totals.discount * -1) + totals.subtotal;
-                totals.taxes    = totals.taxable * core.cr.getData('taxes').decimal;
+                totals.taxes    = roundlessToFix(totals.taxable * core.cr.getData('taxes').decimal);
                 totals.total    = totals.taxable + totals.taxes;
                 core.cr.setData('totals',totals);
 
@@ -576,7 +588,11 @@
                 }
             }
         }
-        return (discount < 0 ? 0 : discount);
+        return (discount < 0 ? 0 : roundlessToFix(discount));
+    }
+
+    function roundlessToFix(number,place) {
+        return String(number * (100 || place)).split('.')[0] / (100 || place);
     }
 
     function overlayDisplay(show) {
@@ -618,7 +634,7 @@
             input.value = '';
             core.cr.setData('paymentphone', check.value);
             core.cr.setData('paymentaccount', core.hf.uuid());
-            core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
+            core.cr.setData('paymentamount',roundlessToFix(core.cr.getData('totals').total));
             startPayment(paymentPhone);
         }
     })
@@ -633,14 +649,14 @@
             input.value = '';
             core.cr.setData('paymentemail', check.value);
             core.cr.setData('paymentaccount', core.hf.uuid());
-            core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
+            core.cr.setData('paymentamount', roundlessToFix(core.cr.getData('totals').total));
             startPayment(paymentEmail);
         }
     })
 
     const iframePayment = () => {
         core.cr.setData('paymentaccount', core.hf.uuid());
-        core.cr.setData('paymentamount', core.cr.getData('totals').total.toFixed(2));
+        core.cr.setData('paymentamount', roundlessToFix(core.cr.getData('totals').total));
         startPayment(paymentIframe);
     }
 
