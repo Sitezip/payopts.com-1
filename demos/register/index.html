@@ -119,7 +119,7 @@
         <li>
             <div class="col p-1">
                 <div class="input-group input-group-sm">
-                    <input id="payopts-text-value" title="SMS Number" type="text" class="form-control" placeholder="SMS Number" aria-label="" aria-describedby="button-addon2">
+                    <input id="payopts-text-value" title="SMS Number" type="text" class="form-control h--account-phone" placeholder="SMS Number">
                     <button class="btn btn-success" type="button" id="payopts-text-action">Send <i class="fa-solid fa-fw fa-mobile"></i></button>
                 </div>
             </div>
@@ -127,7 +127,7 @@
         <li>
             <div class="col p-1">
                 <div class="input-group input-group-sm">
-                    <input id="payopts-email-value" title="Email Address" type="text" class="form-control" placeholder="Email" aria-label="" aria-describedby="button-addon2">
+                    <input id="payopts-email-value" title="Email Address" type="text" class="form-control h--account-email" placeholder="Email">
                     <button class="btn btn-success" type="button" id="payopts-email-action">Send <i class="fa-solid fa-fw fa-at"></i></button>
                 </div>
             </div>
@@ -136,16 +136,16 @@
         <li class="">
             <div class="col p-1">
                 <div class="input-group input-group-sm">
-                    <input id="cart-discount-value" title="Discount Code" type="text" class="form-control" placeholder="Discount Code" aria-label="" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="button" id="cart-discount-action">&gt;</button>
+                    <input id="cart-discount-value" title="Discount Code" type="text" class="form-control h--discount-name" placeholder="Discount Code">
+                    <button class="btn btn-outline-secondary" type="button" id="cart-discount-action" onclick="discountLookup(this.parentElement.querySelector('input').value)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </li>
         <li class="">
             <div class="col p-1">
                 <div class="input-group input-group-sm">
-                    <input id="cart-zipcode-value" title="Tax Zipcode" type="text" class="form-control h-taxes-zipcode" placeholder="Zipcode" aria-label="" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="button" id="cart-zipcode-action">&gt;</button>
+                    <input id="cart-zipcode-value" title="Tax Zipcode" type="text" class="form-control h-taxes-zipcode" placeholder="Zipcode">
+                    <button class="btn btn-outline-secondary" type="button" id="cart-zipcode-action" onclick="getTaxInfo(this.parentElement.querySelector('input').value)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </li>
@@ -178,7 +178,7 @@
 
 <section id="cr-data" style="display:none;">
     <template name="input-accounts">
-        <select id="payopts-account-value" onchange="setClosestClone('account',this.options[this.selectedIndex])" title="Account" class="form-control" aria-label="" aria-describedby="button-addon2">
+        <select id="payopts-account-value" onchange="if(this.value) {core.cr.setData('account',setClosestClone('account',this.options[this.selectedIndex]));}else{core.cr.delData('account')} refreshCart();" title="Account" class="form-control">
             <option value="">Choose Account</option>
             <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:lastName}}, {{rec:firstName}} {{rec:ein}}</option>
         </select>
@@ -345,10 +345,14 @@
 
         core.cr.setData('taxes', {
             zipcode:84003,
-            decimal:0.072,
-            percentage:7.2,
+            decimal:0.075,
+            percentage:7.5,
         });
 
+        core.cr.setData('taxApiKey', 'YtdE6BIXbOZWqo2k');
+        //https://zzzap.io/SecureX/taxRateByUsZip/84003?PublicAuthCd=bfe18ab97f8a3a01d68a5a904719880f4cc9eb7a11ff6f09a433dd45145ec3b3
+        //https://zzzap.io/SecureX/taxRateByUsZip/84003?PublicAuthCd=bfe18ab97f8a3a01d68a5a904719880f4cc9eb7a11ff6f09a433dd45145ec3b3&extendResponse=true
+        //https://zzzap.io/SecureX/taxRateByUsZip/90210?PublicAuthCd=zCd-7a43641a9f185ec6b8e861e6fd89-acf5&extendResponse=true
         //ccSetup, not used
         let ccYYYY = [];
         [0,1,2,3,4,5,6].forEach((i)=>{
@@ -379,6 +383,15 @@
 
     core.ud.postflight = (dataRef, dataObj, type) => {
         if(type === 'data'){
+            if(dataRef.startsWith("taxApi") && dataObj.success && dataObj.hasOwnProperty('response')){
+                dataObj = dataObj.response;
+                core.cr.setData('taxes', {
+                    zipcode:dataObj.results[0].geoPostalCode,
+                    decimal:dataObj.results[0].taxSales,
+                    percentage:toPercentage(dataObj.results[0].taxSales),
+                });
+                refreshCart();
+            }
             switch(dataRef){
                 case 'accounts':
                     dataObj = dataObj.users;
@@ -442,6 +455,21 @@
         // Store the cart
         core.cr.setData(storageName, [cloneData]);
         return cloneData;
+    }
+
+    function getTaxInfo(zipcode) {
+        //taxes
+        const taxData = core.cr.getData('taxApi' + zipcode)
+        if(!taxData){
+            core.be.getData('taxApi' + zipcode, 'https://zzzap.io/SecureX/taxRateByUsZip/' + zipcode + '?PublicAuthCd=zCd-7a43641a9f185ec6b8e861e6fd89-acf5&extendResponse=true')
+        }else{
+            core.cr.setData('taxes', {
+                zipcode:taxData.results[0].geoPostalCode,
+                decimal:taxData.results[0].taxSales,
+                percentage:toPercentage(taxData.results[0].taxSales),
+            });
+            refreshCart();
+        }
     }
 
     function itemAddCleanup(itemRecord) {
@@ -576,6 +604,17 @@
         }
     }
 
+    function discountLookup(name) {
+        const discounts = (core.cr.getData('discounts') || []);
+        for(const discount of discounts){
+            if(discount.name === name || discount.guid === name){
+                core.cr.setData('discount',discount);
+                refreshCart();
+                break;
+            }
+        }
+    }
+
     function applyDiscount(subtotal) {
         const discountObj = core.cr.getData('discount');
         let discount = 0;
@@ -593,8 +632,14 @@
         return (discount < 0 ? 0 : roundlessToFix(discount));
     }
 
-    function roundlessToFix(number,place) {
+    function roundlessToFix(number, place) {
         return String(number * (100 || place)).split('.')[0] / (100 || place);
+    }
+
+    function toPercentage(decimal, decimalPlaces = 2) {
+        const factor     = Math.pow(10, decimalPlaces);
+        const percentage = Math.round((decimal * 100) * factor) / factor;
+        return +percentage.toFixed(decimalPlaces);
     }
 
     function overlayDisplay(show) {
