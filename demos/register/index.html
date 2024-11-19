@@ -335,6 +335,7 @@
             YYYY:core.hf.date(null,'YYYY')
         });
 
+        // set some defaults
         core.cr.setData('totals', {
             discount:0,
             subtotal:0,
@@ -349,10 +350,14 @@
             percentage:7.5,
         });
 
-        core.cr.setData('taxApiKey', 'YtdE6BIXbOZWqo2k');
-        //https://zzzap.io/SecureX/taxRateByUsZip/84003?PublicAuthCd=bfe18ab97f8a3a01d68a5a904719880f4cc9eb7a11ff6f09a433dd45145ec3b3
-        //https://zzzap.io/SecureX/taxRateByUsZip/84003?PublicAuthCd=bfe18ab97f8a3a01d68a5a904719880f4cc9eb7a11ff6f09a433dd45145ec3b3&extendResponse=true
-        //https://zzzap.io/SecureX/taxRateByUsZip/90210?PublicAuthCd=zCd-7a43641a9f185ec6b8e861e6fd89-acf5&extendResponse=true
+        core.cr.setData('discount',
+            core.cr.getData('coreInternalObjects').discount
+        );
+
+        core.cr.setData('account',
+            core.cr.getData('coreInternalObjects').contact
+        );
+
         //ccSetup, not used
         let ccYYYY = [];
         [0,1,2,3,4,5,6].forEach((i)=>{
