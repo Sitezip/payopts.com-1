@@ -373,13 +373,14 @@
         const discounts = [];
         for(const i of new Array(3).fill(1)){
             let num = discounts.length + 1;
-            let discount   = core.cr.getData('coreInternalObjects').discount;//JSON.parse(JSON.stringify(discountObj));
-            discount.name  = "Super Saver " + (5 * num);
+            let discount   = core.cr.getData('coreInternalObjects').discount;
             discount.guid  = core.hf.uuid();
+            discount.ts    = core.hf.date(null, 'TS');
+            discount.name  = "Super Saver " + (5 * num);
             discount.dateStart = core.hf.date();
             discount.dateEnd   = core.hf.date(core.hf.date(null,'TS') + (86400 * 2));
             discount.description   = "Save " + (5 * num) + "% on everything in the store.";
-            discount.percentAmount = (.05 * num);
+            discount.percentAmount = toPercentage(.05 * num);
             discounts.push(discount);
         }
 
@@ -586,10 +587,25 @@
                 pocket.classList.add('core-pocket');
                 pocket.innerHTML = "";
 
+                //build the order
+                const order = core.cr.getData('coreInternalObjects').order;
+                order.guid  = core.hf.uuid();
+                order.ts    = core.hf.date(null,'TS');
+                order.type  = 'cart';
+                order.email = order.contact.email || null; //TODO use correct object
+                order.name  = ((order.contact.firstName || "") + ' ' + (order.contact.lastName || "")).trim() || null; //TODO use correct object
+                order.phone = order.contact.phone || null; //TODO use correct object
+                order.contact  = core.cr.getData('account') || order.contact; //TODO use correct object
+                //order.billing  =  core.cr.getData('account') || order.billing; //TODO use correct object
+                //order.shipping =  core.cr.getData('account') || order.shipping; //TODO use correct object
+                order.discount =  core.cr.getData('discount') || order.discount;
+                order.guidDiscount =  order.discount.guid || null;
+
                 // Total the cart
                 const cart = core.cr.getData('cart');
                 let cartTotal = 0;
                 for (const item of cart) {
+                    order.items.push(item); //TODO use correct object
                     cartTotal+= +item.total;
                 }
 
@@ -601,6 +617,14 @@
                 totals.taxes    = roundlessToFix(totals.taxable * core.cr.getData('taxes').decimal);
                 totals.total    = totals.taxable + totals.taxes;
                 core.cr.setData('totals',totals);
+
+                //finalize pre-order information
+                order.amountDue = totals.total;
+                order.subtotal  = totals.subtotal;
+                order.taxRate   = core.cr.getData('taxes').decimal;
+                order.taxes     = totals.taxes;
+                order.total     = totals.total;
+                core.cr.setData('order',order);
 
                 core.pk.init();
                 // Ready to run after delay
