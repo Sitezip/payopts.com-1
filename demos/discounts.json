@@ -1,0 +1,74 @@
+[
+  {
+    "guid":"60e60d76-34df-460c-bf45-802ff8b001d1",
+    "type":"coupon",
+    "name":"Super Saver 5",
+    "description":"Save 5% on everything in the store.",
+    "dateStart":"11/20/24 10:03 AM",
+    "dateFinal":null,
+    "isActive":true,
+    "isSerialized":false,
+    "productInclusions":[
+
+    ],
+    "productExclusions":[
+
+    ],
+    "currencyAmount":0,
+    "percentAmount":0.05,
+    "maxAmount":null,
+    "cartAmount":0,
+    "quantityLimit":0,
+    "ts":1732122220,
+    "version":20241115,
+    "dateEnd":"11/22/24 10:03 AM"
+  },
+  {
+    "guid":"e1492f8e-e8e1-4b1f-8134-47197d0e8a51",
+    "type":"coupon",
+    "name":"Super Saver 10",
+    "description":"Save 10% on everything in the store.",
+    "dateStart":"11/20/24 10:03 AM",
+    "dateFinal":null,
+    "isActive":true,
+    "isSerialized":false,
+    "productInclusions":[
+
+    ],
+    "productExclusions":[
+
+    ],
+    "currencyAmount":0,
+    "percentAmount":0.1,
+    "maxAmount":null,
+    "cartAmount":0,
+    "quantityLimit":0,
+    "ts":1732122220,
+    "version":20241115,
+    "dateEnd":"11/22/24 10:03 AM"
+  },
+  {
+    "guid":"71a01360-6254-4c53-9bb9-db686868b1df",
+    "type":"coupon",
+    "name":"Super Saver 15",
+    "description":"Save 15% on everything in the store.",
+    "dateStart":"11/20/24 10:03 AM",
+    "dateFinal":null,
+    "isActive":true,
+    "isSerialized":false,
+    "productInclusions":[
+
+    ],
+    "productExclusions":[
+
+    ],
+    "currencyAmount":0,
+    "percentAmount":0.15,
+    "maxAmount":null,
+    "cartAmount":0,
+    "quantityLimit":0,
+    "ts":1732122220,
+    "version":20241115,
+    "dateEnd":"11/22/24 10:03 AM"
+  }
+]

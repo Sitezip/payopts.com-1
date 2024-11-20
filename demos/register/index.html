@@ -388,6 +388,7 @@
     }
 
     core.ud.postflight = (dataRef, dataObj, type) => {
+        const newDataObj = [];
         if(type === 'data'){
             if(dataRef.startsWith("taxApi") && dataObj.success && dataObj.hasOwnProperty('response')){
                 dataObj = dataObj.response;
@@ -400,20 +401,29 @@
             }
             switch(dataRef){
                 case 'accounts':
-                    dataObj = dataObj.users;
+                    for(const account of dataObj.users){
+                        newDataObj.push({...core.cr.getData('coreInternalObjects').contact,...account,...{guid:core.hf.uuid()}})
+                    }
+                    dataObj = newDataObj;
                     break;
                 case 'prods':
-                    dataObj = dataObj.products;
+                    for(const prod of dataObj.products){
+                        newDataObj.push({...core.cr.getData('coreInternalObjects').item,...prod,...{guid:core.hf.uuid()}})
+                    }
+                    dataObj = newDataObj;
                     break;
                 case 'promos':
+                    for(const prod of dataObj.products){
+                        newDataObj.push({...core.cr.getData('coreInternalObjects').item,...prod,...{guid:core.hf.uuid()}})
+                    }
                     dataObj = [
-                        {name:"Starter Pak",prods:[dataObj.products[0],dataObj.products[1],dataObj.products[2]]},
-                        {name:"Monthly Pak",prods:[dataObj.products[3],dataObj.products[4]]},
-                        {name:"Seasonal Pak",prods:[dataObj.products[5]]},
+                        {name:"Starter Pak",prods:[newDataObj[0],newDataObj[1],newDataObj[2]]},
+                        {name:"Monthly Pak",prods:[newDataObj[3],newDataObj[4]]},
+                        {name:"Seasonal Pak",prods:[newDataObj[5]]},
                     ];
                     break;
                 case 'payoptsreport':
-                    if(data.hasOwnProperty('reponse') && dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
+                    if(data.hasOwnProperty('response') && dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
                         // Payment processed
                         endPayment();
                         alert('Payment successful!');
