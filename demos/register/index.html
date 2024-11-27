@@ -329,6 +329,7 @@
 <script src="https://cdn.jsdelivr.net/gh/Sitezip/core.sbs@20240815.0/core.js"></script>
 
 <script>
+    // start user defined core functions
     core.ud.init = () => {
         core.cr.setData('hit', {
             ts:core.hf.date(null,'ts'),
@@ -462,6 +463,7 @@
     }
 
     core.ud.prepaint = () => {}
+    // end user defined core functions
 
     const modal = new bootstrap.Modal(document.getElementById('payopts-modal'), {});
 
