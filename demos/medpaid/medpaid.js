@@ -1,6 +1,3 @@
-const domain = 'medpaid.myshopify.com';
-const storefrontAccessToken = '';
-
 async function fetchAllProducts() {
   const endpoint = `https://${domain}/api/2023-10/graphql.json`;
 
@@ -179,7 +176,7 @@ async function createCheckout(cart=[]) {
 
   if (result.data?.checkoutCreate?.checkout?.webUrl) {
     console.log('Redirect user to complete order:', result.data.checkoutCreate.checkout.webUrl);
-    window.open(result.data.checkoutCreate.checkout.webUrl, "_blank");
+    window.open(result.data.checkoutCreate.checkout.webUrl, "shopify-checkout");
     return result.data.checkoutCreate.checkout.webUrl;
   } else {
     console.error('Error creating checkout:', result);

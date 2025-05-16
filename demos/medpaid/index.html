@@ -85,7 +85,7 @@
 
 <!-- Sticky Header Section -->
 <header class="sticky-header text-center">
-    <h3 class="text-center">PayOpts Phone & Offsite</h3>
+    <h3 class="text-center"><span class="h--store-name">medpaid</span> Phone & Offsite</h3>
     <div class="container">
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
@@ -330,11 +330,23 @@
 <script src="medpaid.js"></script>
 
 <script>
+    let domain = null;
+    let storefrontAccessToken = null;
     // start user defined core functions
     core.ud.init = () => {
+        //shopify settings
+        domain = core.hf.getRoute('searchParams').get('store') || 'multimok.myshopify.com'; //m = multimok.myshopify.com
+        storefrontAccessToken = core.hf.getRoute('searchParams').get('token') || ''; //m = 
+
         core.cr.setData('hit', {
             ts:core.hf.date(null,'ts'),
             YYYY:core.hf.date(null,'YYYY')
+        });
+
+        core.cr.setData('store', {
+            name:domain.split('.')[0],
+            domain:domain,
+            storefrontAccessToken:storefrontAccessToken,
         });
 
         // set some defaults
@@ -397,9 +409,8 @@
                 case 'cart':
                     break;
                 case 'prods':
-                    const domain = 'medpaid.myshopify.com';
-                    const storefrontAccessToken = '';
                     const endpoint = `https://${domain}/api/2023-10/graphql.json`;
+
                     settings.dataSrc = endpoint;
 
                     let cursor = null;
