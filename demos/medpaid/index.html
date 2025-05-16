@@ -436,7 +436,7 @@
                     let cursor = null;
                     const query = `
                         query GetProducts($cursor: String) {
-                            products(first: 1000, after: $cursor) {
+                            products(first: 250, after: $cursor) {
                             pageInfo {
                                 hasNextPage
                             }
