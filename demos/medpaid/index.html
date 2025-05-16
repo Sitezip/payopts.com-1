@@ -71,6 +71,23 @@
         .quantity-input {
             min-width: 40px !important;
         }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            width: max(400px, 100%); /* ensures dropdown is at least 400px or matches input width */
+            /*max-height: 300px;*/
+            overflow-y: auto;
+        }
+
+        @media (max-width: 576px) {
+            .search-dropdown {
+                width: 100% !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -85,7 +102,7 @@
 
 <!-- Sticky Header Section -->
 <header class="sticky-header text-center">
-    <h3 class="text-center"><span class="h--store-name">medpaid</span> Phone & Offsite</h3>
+    <h3 class="text-center"><span class="h--store-name f--upper">PayOpts</span><br>Phone &amp; Offsite</h3>
     <div class="container">
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
@@ -188,27 +205,30 @@
         </select>
     </template>
     <template name="prod-search">
-        <div class="input-group">
-            <input autocomplete="off" type="text" class="form-control" id="searchInput" placeholder="Product Search..." onkeyup="filterOptions()">
-        </div>
-        <div class="search-dropdown d-none" id="dropdownOptions">
-            <div class="core-clone search-dropdown-item" data-core-data="prods" data-core-source="https://dummyjson.com/products?limit=30">
-                <div class="row m-0 small">
-                    <div class="col p-0 m-0">
-                        {{rec:thumbnail:imgsrc:class="w-50"}}
+        <div class="position-relative w-100">
+            <div class="input-group">
+                <input autocomplete="off" type="text" class="form-control" id="searchInput" placeholder="Product Search..." onkeyup="filterOptions()">
+            </div>
+
+            <div class="search-dropdown d-none shadow border rounded bg-white" id="dropdownOptions">
+                <div class="core-clone search-dropdown-item" data-core-data="prods" data-core-source="https://dummyjson.com/products?limit=30">
+                <div class="row small align-items-center">
+                    <div class="col-2">
+                        {{rec:thumbnail:imgsrc:class="w-100"}}
                     </div>
-                    <div class="col p-0 m-0 text-truncate">
+                    <div class="col-4 text-truncate">
                         {{rec:title}}
                     </div>
-                    <div class="col p-0 m-0">
+                    <div class="col-3 text-truncate">
                         {{rec:sku:upper}}
                     </div>
-                    <div class="col p-0 m-0">
-                        <div class="input-group-sm">
-                            <a href="#" class="btn btn-secondary p-1" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail"><i class="fa-solid fa-fw fa-ellipsis-vertical fa-xs"></i></a>
-                            <button type="button" class="btn btn-success p-1" onclick="itemAddCleanup(setClosestClone('item',this))"><i class="fa-solid fa-fw fa-plus fa-xs"></i></button>
-                        </div>
+                    <div class="col-3">
+                    <div class="input-group-sm">
+                        <a href="#" class="btn btn-secondary p-1" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail"><i class="fa-solid fa-fw fa-ellipsis-vertical fa-xs"></i></a>
+                        <button type="button" class="btn btn-success p-1" onclick="itemAddCleanup(setClosestClone('item',this))"><i class="fa-solid fa-fw fa-plus fa-xs"></i></button>
                     </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -335,8 +355,8 @@
     // start user defined core functions
     core.ud.init = () => {
         //shopify settings
-        domain = core.hf.getRoute('searchParams').get('store') || 'multimok.myshopify.com'; //m = multimok.myshopify.com
-        storefrontAccessToken = core.hf.getRoute('searchParams').get('token') || ''; //m = 
+        domain = core.hf.getRoute('searchParams').get('store') || 'multimok.myshopify.com';
+        storefrontAccessToken = core.hf.getRoute('searchParams').get('token') || '';
 
         core.cr.setData('hit', {
             ts:core.hf.date(null,'ts'),
@@ -838,6 +858,7 @@
         startPayment(paymentIframe);
     }
 
+    //TODO switch to medpaid
     let paymentEmail  = 'https://tco.zzzap.io/Sequence/29805dd/asJSON?account={{account}}&amount={{amount}}&email={{email}}&PublicAuthCd=zCd-ae40173-bed24f676a88cb060ee8ef303'
     let paymentPhone  = 'https://tco.zzzap.io/Sequence/d7d22e0/asJSON?account={{account}}&amount={{amount}}&phone={{phone}}&PublicAuthCd=zCd-a266-ebe-dcfc8ec6c334d9-bfcf17be15e'
     let paymentIframe = 'https://tco.zzzap.io/Sequence/3a892ac/asJSON?account={{account}}&amount={{amount}}&PublicAuthCd=zCd-214de0c9d1-dbe481-cabf4c6d117b0238'

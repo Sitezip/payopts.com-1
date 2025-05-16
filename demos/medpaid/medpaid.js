@@ -133,6 +133,8 @@ async function createCheckout(cart=[]) {
     return;
   }
 
+  overlayDisplay(true);
+
   const endpoint = `https://${domain}/api/2023-10/graphql.json`;
 
   const query = `
@@ -175,10 +177,12 @@ async function createCheckout(cart=[]) {
   const result = await response.json();
 
   if (result.data?.checkoutCreate?.checkout?.webUrl) {
+    overlayDisplay(false);
     console.log('Redirect user to complete order:', result.data.checkoutCreate.checkout.webUrl);
     window.open(result.data.checkoutCreate.checkout.webUrl, "shopify-checkout");
     return result.data.checkoutCreate.checkout.webUrl;
   } else {
+    overlayDisplay(false);
     console.error('Error creating checkout:', result);
     throw new Error('Checkout creation failed.');
   }
