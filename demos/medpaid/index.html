@@ -68,6 +68,9 @@
             font-size: 1.5rem;
             font-weight: bold;
         }
+        .quantity-input {
+            min-width: 40px !important;
+        }
     </style>
 </head>
 <body>
@@ -152,7 +155,8 @@
         <li>
             <div class="col p-1">
                 <a class="btn btn-sm btn-outline-danger" href="#" onclick="removeItemsFromCart(core.cr.getData('cart'))"><i class="fa-solid fa-arrows-rotate"></i> Reset Cart</a>
-                <a id="payopts-popup" class="btn btn-sm btn-outline-secondary" target="#modal-body" onclick="iframePayment()" data-core-templates="payment-iframe"><i class="fa-solid fa-credit-card"></i> Payment Popup</a>
+                <a id="payopts-popup" class="d-none btn btn-sm btn-outline-secondary" target="#modal-body" onclick="iframePayment()" data-core-templates="payment-iframe"><i class="fa-solid fa-credit-card"></i> Payment Popup</a>
+                <a id="shopify-popup" class="btn btn-sm btn-outline-secondary" onclick="createCheckout()" ><i class="fa-brands fa-shopify"></i> Checkout</a>
             </div>
         </li>
     </ul>
@@ -232,86 +236,81 @@
     </template>
     <template name="ux-cart">
         <div class="container mt-4">
-            <table class="table table-bordered table-hover mt-3">
-                <thead class="table-light">
-                <tr>
-                    <th>Item</th>
-                    <th>Desc</th>
-                    <th>Price</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="core-clone" data-core-data="cart">
-                    <td>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mt-3">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Item</th>
+                        <th>Desc</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="core-clone" data-core-data="cart">
+                        <td>
                         {{rec:title}}
-                    </td>
-                    <td>
-                        <div class="row">
-                            <div class="col-2">
-                                {{rec:thumbnail:imgsrc:class="w-100"}}
+                        </td>
+                        <td>
+                        <div class="row g-2">
+                            <div class="col-sm-3">
+                            {{rec:thumbnail:imgsrc:class="w-100"}}
                             </div>
-                            <div class="col-10">
-                                <span class="d-none d-lg-block">{{rec:description:truncate:56}}</span>
-                                <span class="small text-secondary">{{rec:sku:upper}}</span>
+                            <div class="col-sm-9">
+                            <span class="d-none d-lg-block">{{rec:description:truncate:56}}</span><br>
+                            <span class="small text-secondary">{{rec:sku:upper}}</span>
                             </div>
                         </div>
-                    </td>
-                    <td class="text-end">
+                        </td>
+                        <td class="text-end text-nowrap">
                         {{rec:price:money:$}} <br>
-                        <a href="#" class="small" onclick="removeItemFromCart(setClosestClone('removed',this))">Remove</a>
+                        <a href="#" class="small" onclick="removeItemFromCart(setClosestClone('removed',this))">Remove</a> |
                         <a href="#" class="small" target="#modal-body" onclick="modal.show(); setClosestClone('prod',this);" data-core-templates="prod-detail">View</a>
-                    </td>
-                    <td>
-                        <div class="input-group input-group-sm quantity-input-group">
+                        </td>
+                        <td>
+                        <div class="input-group input-group-sm flex-nowrap">
                             <button class="btn btn-sm btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
                             <input type="number" value="{{rec:quantity}}" min="1" class="form-control text-center quantity-input" readonly>
                             <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
                         </div>
-                    </td>
-                    <td class="total-price text-end">{{rec:total:money:$}}</td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr class="small">
-                    <td colspan="4" class="text-end">
-                        <span>Subtotal:</span>
-                    </td>
-                    <td class="text-end"><span class="grand-total h--totals-subtotal f--money" data-f-clue="$"></span></td>
-                </tr>
-                <tr class="small">
-                    <td colspan="4" class="text-end">
-                        <span>Discount <span class="small">(<span class="h--discount-name"></span>)</span>:</span>
-                    </td>
-                    <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
-                </tr>
-                <tr class="small">
-                    <td colspan="4" class="text-end">
-                        <span>Taxes <span class="small">(<span class="h--taxes-percentage"></span>%)</span>:</span>
-                    </td>
-                    <td class="text-end"><span class="grand-total h--totals-taxes f--money" data-f-clue="$"></span></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-end">
-                        <strong>Grand Total:</strong>
-                    </td>
-                    <td class="text-end"><strong class="grand-total h--totals-total f--money" data-f-clue="$"></strong></td>
-                </tr>
-                </tfoot>
-            </table>
+                        </td>
+                        <td class="total-price text-end text-nowrap">{{rec:total:money:$}}</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr class="small">
+                        <td colspan="4" class="text-end"><span>Subtotal:</span></td>
+                        <td class="text-end"><span class="grand-total h--totals-subtotal f--money" data-f-clue="$"></span></td>
+                    </tr>
+                    <tr class="small">
+                        <td colspan="4" class="text-end"><span>Discount <span class="small">(<span class="h--discount-name"></span>)</span>:</span></td>
+                        <td class="text-end"><span class="grand-total h--totals-discount f--money" data-f-clue="$"></span></td>
+                    </tr>
+                    <tr class="small">
+                        <td colspan="4" class="text-end"><span>Taxes <span class="small">(<span class="h--taxes-percentage"></span>%)</span>:</span></td>
+                        <td class="text-end"><span class="grand-total h--totals-taxes f--money" data-f-clue="$"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+                        <td class="text-end"><strong class="grand-total h--totals-total f--money" data-f-clue="$"></strong></td>
+                    </tr>
+                    </tfoot>
+                </table>
+                </div>
+
         </div>
     </template>
     <template name="ux-promotions">
         <div class="form-control-sm">
-            <button class="btn btn-outline-secondary core-clone" data-core-data="promos" data-core-source="https://dummyjson.com/products/search?q=phone&limit=6" onclick="addItemsToCart(setClosestClone('promo',this).prods)">
+            <button class="btn btn-outline-secondary core-clone" data-core-data="promos" data-core-source="/demos/medpaid/promos.json" onclick="addItemsToCart(setClosestClone('promo',this).prods)">
                 #{{aug:count:padleft:2|0}} - {{rec:name}}
             </button>
         </div>
     </template>
     <template name="ux-discounts">
         <div class="form-control-sm">
-            <button class="btn btn-link core-clone" title="{{rec:description}}" data-core-data="discounts" onclick="core.cr.setData('discount', setClosestClone('discount',this));refreshCart();">
+            <button class="btn btn-link core-clone" title="{{rec:description}}" data-core-data="discounts" data-core-source="/demos/medpaid/discounts.json" onclick="core.cr.setData('discount', setClosestClone('discount',this));refreshCart();">
                 {{rec:name}}
             </button>
         </div>
@@ -326,7 +325,9 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Sitezip/core.sbs@20240815.0/core.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Sitezip/core.sbs@20250312.0/core.js"></script>
+
+<script src="medpaid.js"></script>
 
 <script>
     // start user defined core functions
@@ -380,6 +381,81 @@
         // core.cr.setData('discounts', discounts);
     }
 
+    core.ud.preflight = (dataRef, dataSrc, type) => {
+        let settings = {dataRef, dataSrc, type};
+        if(type === 'data'){
+            switch(dataRef){
+                case 'discounts':
+                    settings.dataSrc = '/demos/medpaid/discounts.json';
+                    break;
+                case 'accounts':
+                    settings.dataSrc = '/demos/medpaid/accounts.json';
+                    break;
+                case 'promos':
+                    settings.dataSrc = '/demos/medpaid/promos.json';
+                    break;
+                case 'cart':
+                    break;
+                case 'prods':
+                    const domain = 'medpaid.myshopify.com';
+                    const storefrontAccessToken = '';
+                    const endpoint = `https://${domain}/api/2023-10/graphql.json`;
+                    settings.dataSrc = endpoint;
+
+                    let cursor = null;
+                    const query = `
+                        query GetProducts($cursor: String) {
+                            products(first: 100, after: $cursor) {
+                            pageInfo {
+                                hasNextPage
+                            }
+                            edges {
+                                cursor
+                                node {
+                                id
+                                title
+                                handle
+                                description
+                                images(first: 1) {
+                                    edges {
+                                        node {
+                                            src
+                                        }
+                                    }
+                                }
+                                variants(first: 1) {
+                                    edges {
+                                    node {
+                                        id
+                                        price {
+                                            amount
+                                            currencyCode
+                                        }
+                                    }
+                                    }
+                                }
+                                }
+                            }
+                            }
+                        }`;
+
+                    const variables     = {cursor};
+                    settings.data       = {query, variables};
+                    settings.headers    = {'Content-Type':'application/json','X-Shopify-Storefront-Access-Token': storefrontAccessToken};
+                    settings.method     = 'POST';
+                    settings.isFormData = false; //needs to be set at body
+
+                    break;
+                case 'taxApi':
+                    break;
+            }
+        }else{
+            //TODO
+        }
+        if(core.useDebugger) console.log('ud.preflight',{dataRef, dataSrc, type, settings});
+        return settings;
+    }
+
     core.ud.postflight = (dataRef, dataObj, type) => {
         const newDataObj = [];
         if(type === 'data'){
@@ -394,26 +470,37 @@
             }
             switch(dataRef){
                 case 'accounts':
-                    for(const account of dataObj.users){
-                        newDataObj.push({...core.cr.getData('coreInternalObjects').contact,...account,...{guid:core.hf.uuid()}})
-                    }
+                    // for(const account of dataObj.users){
+                    //     newDataObj.push({...core.cr.getData('coreInternalObjects').contact,...account,...{guid:core.hf.uuid()}})
+                    // }
                     dataObj = newDataObj;
                     break;
                 case 'prods':
-                    for(const prod of dataObj.products){
-                        newDataObj.push({...core.cr.getData('coreInternalObjects').item,...prod,...{guid:core.hf.uuid()}})
+                    console.log('prods',dataObj);
+                    const products = dataObj.data.products.edges;
+                    
+                    for(const prod of products){
+                        let product = prod.node || {};
+                        
+                        product.thumbnail = product.images.edges[0]?.node.src || '';
+                        product.price     = product.variants.edges[0]?.node.price.amount || 'N/A';
+                        product.currency  = product.variants.edges[0]?.node.price.currencyCode || '';
+                        product.variantId = product.variants.edges[0]?.node.id || '';
+                        product.sku       = product.variantId.split('/').pop(); // required for cart functionality
+
+                        newDataObj.push({...core.cr.getData('coreInternalObjects').item,...product,...{guid:core.hf.uuid()}})
                     }
                     dataObj = newDataObj;
                     break;
                 case 'promos':
-                    for(const prod of dataObj.products){
-                        newDataObj.push({...core.cr.getData('coreInternalObjects').item,...prod,...{guid:core.hf.uuid()}})
-                    }
-                    dataObj = [
-                        {name:"Starter Pak",prods:[newDataObj[0],newDataObj[1],newDataObj[2]]},
-                        {name:"Monthly Pak",prods:[newDataObj[3],newDataObj[4]]},
-                        {name:"Seasonal Pak",prods:[newDataObj[5]]},
-                    ];
+                    // for(const prod of dataObj.products){
+                    //     newDataObj.push({...core.cr.getData('coreInternalObjects').item,...prod,...{guid:core.hf.uuid()}})
+                    // }
+                    // dataObj = [
+                    //     {name:"Starter Pak",prods:[newDataObj[0],newDataObj[1],newDataObj[2]]},
+                    //     {name:"Monthly Pak",prods:[newDataObj[3],newDataObj[4]]},
+                    //     {name:"Seasonal Pak",prods:[newDataObj[5]]},
+                    // ];
                     break;
                 case 'payoptsreport':
                     if(data.hasOwnProperty('response') && dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
