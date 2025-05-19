@@ -157,7 +157,7 @@
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="cart-discount-value" title="Discount Code" type="text" class="form-control h--discount-name" placeholder="Discount Code">
-                    <button class="btn btn-outline-secondary" type="button" id="cart-discount-action" onclick="discountLookup(this.parentElement.querySelector('input').value)">Add <i class="fa-solid fa-receipt"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" id="cart-discount-action" onclick="discountLookup(this.parentElement.querySelector('input').value)">Apply Disc <i class="fa-solid fa-receipt"></i></button>
                 </div>
             </div>
         </li>
@@ -165,7 +165,7 @@
             <div class="col p-1">
                 <div class="input-group input-group-sm">
                     <input id="cart-zipcode-value" title="Tax Zipcode" type="text" class="form-control h-taxes-zipcode" placeholder="Zipcode">
-                    <button class="btn btn-outline-secondary" type="button" id="cart-zipcode-action" onclick="getTaxInfo(this.parentElement.querySelector('input').value)">Set Tax <i class="fa-solid fa-percent"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" id="cart-zipcode-action" onclick="getTaxInfo(this.parentElement.querySelector('input').value)">Apply Tax <i class="fa-solid fa-percent"></i></button>
                 </div>
             </div>
         </li>
@@ -201,7 +201,7 @@
     <template name="input-accounts">
         <select id="payopts-account-value" onchange="if(this.value) {core.cr.setData('account',setClosestClone('account',this.options[this.selectedIndex]));}else{core.cr.delData('account')} refreshCart();" title="Account" class="form-control">
             <option value="">Choose Account</option>
-            <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:lastName}}, {{rec:firstName}} {{rec:ein}}</option>
+            <option class="core-clone" data-core-data="accounts" data-core-source="https://dummyjson.com/users?limit=20&skip=10&select=firstName,lastName,username,address,ssn,ein,email,phone" value="{{rec:username}}">{{rec:nameLast}}, {{rec:nameFirst}}</option>
         </select>
     </template>
     <template name="prod-search">
@@ -330,6 +330,7 @@
     </template>
     <template name="ux-discounts">
         <div class="form-control-sm">
+            Discounts:
             <button class="btn btn-link core-clone" title="{{rec:description}}" data-core-data="discounts" data-core-source="/demos/medpaid/discounts.json" onclick="core.cr.setData('discount', setClosestClone('discount',this));refreshCart();">
                 {{rec:name}}
             </button>
@@ -394,23 +395,6 @@
         core.cr.setData('ccMM', ccMM);
         core.cr.setData('cart', []);
         core.useDebugger = true;
-
-        // testing
-        // const discounts = [];
-        // for(const i of new Array(3).fill(1)){
-        //     let num = discounts.length + 1;
-        //     let discount   = core.cr.getData('coreInternalObjects').discount;
-        //     discount.guid  = core.hf.uuid();
-        //     discount.ts    = core.hf.date(null, 'TS');
-        //     discount.name  = "Super Saver " + (5 * num);
-        //     discount.dateStart = core.hf.date();
-        //     discount.dateEnd   = core.hf.date(core.hf.date(null,'TS') + (86400 * 2));
-        //     discount.description   = "Save " + (5 * num) + "% on everything in the store.";
-        //     discount.percentAmount = roundlessToFix(.05 * num);
-        //     discounts.push(discount);
-        // }
-
-        // core.cr.setData('discounts', discounts);
     }
 
     core.ud.preflight = (dataRef, dataSrc, type) => {
@@ -500,14 +484,27 @@
                 refreshCart();
             }
             switch(dataRef){
+                case 'coreInternalObjects':
+                    if(dataObj?.discount){
+                        let discount   = dataObj?.discount || {};
+                        discount.guid  = core.hf.uuid();
+                        discount.ts    = core.hf.date(null, 'TS');
+                        discount.name  = "None";
+                        discount.dateStart = core.hf.date();
+                        discount.dateEnd   = core.hf.date(core.hf.date(null,'TS') + (86400 * 5));
+                        discount.description   = "A discount is not active in this mode.";
+                        discount.percentAmount = 0;
+                        core.cr.setData('discounts', [discount]);
+                        core.cr.setData('discount', discount);
+                    }
+                    break;
                 case 'accounts':
-                    // for(const account of dataObj.users){
-                    //     newDataObj.push({...core.cr.getData('coreInternalObjects').contact,...account,...{guid:core.hf.uuid()}})
-                    // }
-                    dataObj = newDataObj;
+                    //test data
+                    const testAccount = {guid:core.hf.uuid(),nameFirst:"John",nameLast:"Doe",email:"johndoe@medpaid.com",phone:"801-555-1212",username:"testuser"};
+                    dataObj.push({...core.cr.getData('coreInternalObjects').contact,...testAccount});
+                    console.log('accounts',newDataObj);
                     break;
                 case 'prods':
-                    console.log('prods',dataObj);
                     const products = dataObj.data.products.edges;
                     
                     for(const prod of products){
@@ -522,16 +519,26 @@
                         newDataObj.push({...core.cr.getData('coreInternalObjects').item,...product,...{guid:core.hf.uuid()}})
                     }
                     dataObj = newDataObj;
+                    
+                    const promoObj = [];
+                    const promoGroups = ['Meno','Brain Protect','Bean Stalk'];
+                    const prods = dataObj;
+                    for(const promoGroup of promoGroups){
+                        const group = {name:promoGroup, prods:[]};
+                        for(const prod of prods){
+                            if(JSON.stringify(prod).toLowerCase().includes(promoGroup.toLocaleLowerCase())){
+                                group.prods = group.prods || [];
+                                group.prods.push(prod);
+                            }
+                        }
+                        if(group.prods.length){
+                            promoObj.push(group);
+                        }
+                    }
+                    core.cr.setData('promos', promoObj);
                     break;
                 case 'promos':
-                    // for(const prod of dataObj.products){
-                    //     newDataObj.push({...core.cr.getData('coreInternalObjects').item,...prod,...{guid:core.hf.uuid()}})
-                    // }
-                    // dataObj = [
-                    //     {name:"Starter Pak",prods:[newDataObj[0],newDataObj[1],newDataObj[2]]},
-                    //     {name:"Monthly Pak",prods:[newDataObj[3],newDataObj[4]]},
-                    //     {name:"Seasonal Pak",prods:[newDataObj[5]]},
-                    // ];
+                    dataObj = core.cr.getData('promos') || [];
                     break;
                 case 'payoptsreport':
                     if(data.hasOwnProperty('response') && dataObj.response.hasOwnProperty('successTs') && dataObj.response.successTs) {
