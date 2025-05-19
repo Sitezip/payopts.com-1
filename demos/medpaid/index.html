@@ -330,7 +330,6 @@
     </template>
     <template name="ux-discounts">
         <div class="form-control-sm">
-            Discounts:
             <button class="btn btn-link core-clone" title="{{rec:description}}" data-core-data="discounts" data-core-source="/demos/medpaid/discounts.json" onclick="core.cr.setData('discount', setClosestClone('discount',this));refreshCart();">
                 {{rec:name}}
             </button>
@@ -418,6 +417,8 @@
                     settings.dataSrc = endpoint;
 
                     let cursor = null;
+                    // first: 250, after: $cursor, query: "title:pumpkin"
+                    // first: 250, after: $cursor, query: "pumpkin"
                     const query = `
                         query GetProducts($cursor: String) {
                             products(first: 250, after: $cursor) {
@@ -494,7 +495,7 @@
                         discount.dateEnd   = core.hf.date(core.hf.date(null,'TS') + (86400 * 5));
                         discount.description   = "A discount is not active in this mode.";
                         discount.percentAmount = 0;
-                        core.cr.setData('discounts', [discount]);
+                        //core.cr.setData('discounts', [discount]);
                         core.cr.setData('discount', discount);
                     }
                     break;
@@ -505,7 +506,10 @@
                     console.log('accounts',newDataObj);
                     break;
                 case 'prods':
-                    const products = dataObj.data.products.edges;
+                    const data = dataObj.data.products;
+                    const products = data.edges;
+                    const hasNextPage = data.pageInfo.hasNextPage;
+                    const cursor = hasNextPage ? products[products.length - 1].cursor : null;
                     
                     for(const prod of products){
                         let product = prod.node || {};
