@@ -1,880 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>PayOpts - Easy, Reliable Payment Options</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+  <meta charset="utf-8">
+  <title>PayOpts - Easy, Reliable Payment Options</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PayOpts helps D2C and subscription brands rescue declined payments before customers are cancelled, and win back the ones already lost, with a secure no-login text or email link.">
 
-    <!-- Favicon -->
-    <link href="/_assets/payopts/img/favicon.ico" rel="icon">
+  <!-- Fonts & libraries (CDN) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">  
+  <style>
+    :root { --primary: #015FC9; --secondary: #6c757d; --dark: #0B2154; --light: #F2F8FE; }
+    body { font-family: 'Open Sans', sans-serif; color: #555; }
+    h1,h2,h3,h4,h5,h6,.navbar-brand,.btn { font-family: 'Roboto', sans-serif; font-weight: 700; color: var(--dark); }
+    .text-primary { color: var(--primary) !important; }
+    .bg-primary { background-color: var(--primary) !important; }
+    .bg-dark { background-color: var(--dark) !important; }
+    .bg-light { background-color: var(--light) !important; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .btn-primary, .btn-primary:hover, .btn-outline-light:hover { color: #fff; }
+    .btn-outline-light { color: #fff; }
+    .btn-light { color: var(--primary); }
+    .btn-primary:hover { background: #0150aa; border-color: #0150aa; }
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    /* Top bar */
+    .topbar { background: var(--dark); font-size: 14px; }
+    .topbar a, .topbar small { color: rgba(255,255,255,.75); text-decoration: none; }
 
-    <!-- Libraries Stylesheet -->
-    <link href="/_assets/payopts/lib/animate/animate.min.css" rel="stylesheet">
-    <link href="/_assets/payopts/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    /* Navbar */
+    .navbar .nav-link { font-family: 'Roboto', sans-serif; font-weight: 500; color: var(--dark); padding: 28px 14px; }
+    .navbar .nav-link:hover, .navbar .nav-link.active { color: var(--primary); }
+    .navbar-brand h1 { margin: 0; font-size: 2rem; }
+    @media (max-width: 991.98px) { .navbar .nav-link { padding: 10px 0; } }
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="/_assets/payopts/css/bootstrap.min.css" rel="stylesheet">
+    /* Carousel */
+    .carousel-item img { width: 100%; height: 85vh; min-height: 420px; object-fit: cover; }
+    .carousel-caption { inset: 0; display: flex; align-items: center; text-align: left; background: rgba(11,33,84,.65); }
+    .carousel-caption h1 { color: #fff; }
 
-    <!-- Template Stylesheet -->
-    <link href="/_assets/payopts/css/style.css" rel="stylesheet">
+    /* Section titles */
+    .section-title { position: relative; display: inline-block; padding-bottom: 6px; margin-bottom: 1rem; }
+    .section-title::after { content: ""; position: absolute; left: 0; bottom: 0; width: 45px; height: 3px; background: var(--primary); }
+    .text-center .section-title::after { left: 50%; transform: translateX(-50%); }
+
+    /* Feature / service cards */
+    .feature-item, .service-item { background: #fff; border-radius: 8px; box-shadow: 0 0 45px rgba(0,0,0,.07); height: 100%; transition: .3s; }
+    .feature-item:hover, .service-item:hover { transform: translateY(-6px); }
+    .feature-icon { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--light); color: var(--primary); font-size: 28px; }
+    .service-item img { border-radius: 8px 8px 0 0; height: 220px; object-fit: cover; width: 100%; }
+
+    /* Integrations */
+    .logo-pill { display: inline-block; padding: 10px 18px; margin: 6px; border-radius: 50px; background: #fff; border: 1px solid #dde7f3; font-weight: 500; color: var(--dark); }
+
+    /* Team */
+    .team-item img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px 8px 0 0; }
+
+    /* Testimonials */
+    .testimonial-item img { width: 70px; height: 70px; object-fit: cover; }
+
+    /* Footer */
+    .footer { background: var(--dark); color: rgba(255,255,255,.7); }
+    .footer h4, .footer h5 { color: #fff; }
+    .footer a { color: rgba(255,255,255,.7); text-decoration: none; display: block; margin-bottom: 6px; }
+    .footer a:hover { color: #fff; }
+    .copyright { border-top: 1px solid rgba(255,255,255,.1); }
+    img { max-width: 100%; }
+  
+    .hero { position: relative; background: linear-gradient(rgba(11,33,84,.85), rgba(11,33,84,.85)), url('https://www.payopts.com/_assets/payopts/img/carousel-1.jpg') center/cover no-repeat; color: rgba(255,255,255,.85); }
+    .hero h1 { color: #fff; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; font-weight: 600; color: var(--primary); }
+    .hero .eyebrow { color: #8fc1ff; }
+    .phone { max-width: 340px; margin: 0 auto; background: #fff; border-radius: 28px; padding: 22px 18px; box-shadow: 0 20px 60px rgba(0,0,0,.35); color: #222; }
+    .phone .from { font-size: 12px; color: #888; text-align: center; margin-bottom: 12px; }
+    .bubble { background: #E9EEF5; border-radius: 18px 18px 18px 4px; padding: 14px 16px; font-size: 15px; line-height: 1.45; }
+    .bubble a { color: var(--primary); font-weight: 600; }
+    .problem-card { background: #fff; border-left: 4px solid #dc3545; border-radius: 8px; padding: 22px; height: 100%; box-shadow: 0 0 30px rgba(0,0,0,.05); }
+    .flex-none { flex: none; }
+    .step-num { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 20px; }
+    .cta-band { background: var(--primary); color: rgba(255,255,255,.9); }
+    .cta-band h2 { color: #fff; }
+
+    .logo-ribbon { background: #fff; border-top: 1px solid #e6edf5; }
+    .ribbon-viewport { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+    .ribbon-track { display: flex; width: max-content; animation: ribbon-scroll 40s linear infinite; }
+    .ribbon-viewport:hover .ribbon-track { animation-play-state: paused; }
+    .ribbon-set { display: flex; align-items: center; }
+    .logo-item { display: flex; align-items: center; gap: 10px; margin: 0 36px; color: #7a8699; font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 22px; white-space: nowrap; transition: color .2s; }
+    .logo-item svg { width: 30px; height: 30px; fill: currentColor; flex: none; }
+    .logo-item:hover { color: var(--dark); }
+    @keyframes ribbon-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .ribbon-track { animation: none; width: auto; }
+      .ribbon-set { flex-wrap: wrap; justify-content: center; }
+      .ribbon-set[aria-hidden] { display: none; }
+    }
+</style>
 </head>
-
 <body>
-    <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top shadow-sm px-4 px-lg-5 py-lg-0">
+    <a href="/" class="navbar-brand"><h1 class="text-primary">PayOpts</h1></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <div class="navbar-nav ms-auto">
+        <a href="#problem" class="nav-item nav-link">The Problem</a>
+        <a href="#how" class="nav-item nav-link">How It Works</a>
+        <a href="#options" class="nav-item nav-link">Options</a>
+        <a href="#integrations" class="nav-item nav-link">Integrations</a>
+        <a href="#contact" class="nav-item nav-link">Contact</a>
+        <a href="https://www.payopts.com/login" class="nav-item nav-link">Login</a>
+      </div>
+      <a href="#contact" class="btn btn-primary rounded-pill px-4 ms-lg-3 my-2 my-lg-0">Book a Demo</a>
     </div>
-    <!-- Spinner End -->
+  </nav>
 
-    <!-- Navbar Start -->
-    <div class="container-fluid fixed-top px-0 wow fadeIn pocket" name="nav" data-items="header,nav" data-wow-delay="0.1s"></div>
-    <!-- Navbar End -->
-
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0 mb-5 wow fadeIn pocket" name="carousel" data-items="carousel" data-wow-delay="0.1s"></div>
-    <!-- Carousel End -->
-
-    <div class="container-fluid dashboard pt-5" style="display: none">
-        <div class="container">
-            <div class="row search pt-5">
-                <div class="col-7 pocket" name="cart" data-items="search"></div>
-            </div>
-            <div class="row">
-                <div class="col-lg-7 col-md-12 search-products"></div>
-                <div class="col-lg-5 col-md-12 cart-totals"></div>
-            </div>
+  <!-- Hero -->
+  <header class="hero py-5">
+    <div class="container py-5">
+      <div class="row g-5 align-items-center">
+        <div class="col-lg-7">
+          <p class="eyebrow mb-3">For D2C and subscription brands</p>
+          <h1 class="display-5 mb-4">Rescue declined payments before the customer churns. Win back the ones you&rsquo;ve already lost.</h1>
+          <p class="fs-5 mb-4">When a card is declined and retries can't fix it, PayOpts texts or emails your customer a secure link to update it in seconds, with no login. And for customers who were cancelled after not responding, we run win-back campaigns that make starting back up just as easy.</p>
+          <a href="#contact" class="btn btn-primary rounded-pill py-3 px-5 me-2 mb-2">Book a Demo</a>
+          <a href="#how" class="btn btn-outline-light rounded-pill py-3 px-5 mb-2">See How It Works</a>
         </div>
+        <div class="col-lg-5">
+          <div class="phone">
+            <div class="from">Text message &middot; Your Brand</div>
+            <div class="bubble">
+              Hi Jason, good news! We'd like to add a free meal to your next order. 🎉<br><br>
+              We'll charge your card ending in 4242. Just confirm the expiration date to continue:<br>
+              <a href="#how">Confirm my card</a><br><br>
+              Want to use a different card? <a href="#how">Update payment method</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <!-- About Start -->
-    <div class="container-xxl py-5 marketing pocket" id="nav-id" name="about" data-items="about"></div>
-    <!-- About End -->
-
-    <!-- Facts Start -->
-    <div class="container-fluid facts my-5 py-5 x-pocket" id="nav-facts" name="facts" data-items="facts"></div>
-    <!-- Facts End -->
-
-    <!-- Features Start -->
-    <div class="container-xxl feature py-5 marketing pocket" id="nav-features-main" name="features" data-items="features"></div>
-    <!-- Features End -->
-
-    <!-- Service Start -->
-    <div class="container-xxl service py-5 x-pocket" id="nav-service" name="service" data-items="service"></div>
-    <!-- Service End -->
-
-    <!-- Callback Start -->
-    <div class="container-fluid callback my-5 pt-5 marketing pocket" id="nav-contact" name="contact" data-items="contact"></div>
-    <!-- Callback End -->
-
-    <!-- Projects Start -->
-    <div class="container-xxl py-5 x-pocket" id="nav-projects" name="projects" data-items="projects"></div>
-    <!-- Projects End -->
-
-    <!-- Team Start -->
-    <div class="container-xxl py-5 x-pocket" id="nav-team" name="team" data-items="team"></div>
-    <!-- Team End -->
-
-    <!-- Testimonial Start -->
-    <div class="container-xxl py-5 x-pocket" id="nav-testimonials" name="testimonials" data-items="testimonials"></div>
-    <!-- Testimonial End -->
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer mt-5 py-5 wow fadeIn pocket" id="nav-footer" name="footer" data-items="footer" data-wow-delay="0.1s"></div>
-    <!-- Footer End -->
-
-    <!-- Copyright Start -->
-    <div class="container-fluid copyright py-4 pocket" name="copyright" data-items="copyright"></div>
-    <!-- Copyright End -->
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-    <!-- modal -->
-    <div id="generic-modal" class="modal" tabindex="-1" style="display: none">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-light">
-                    <h5 class="modal-title text-dark"></h5>
-                    <button type="button" class="btn-close text-light" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body"></div>
-                <div class="modal-footer" style="display: none;"></div>
-            </div>
-        </div>
+  <!-- Problem -->
+  <section id="problem" class="container-fluid bg-light py-5">
+    <div class="container py-4">
+      <div class="text-center mx-auto mb-5" style="max-width: 760px;">
+        <p class="section-title text-primary fw-medium">The Problem</p>
+        <h2 class="display-6 mb-3">A declined card shouldn't cost you a customer</h2>
+        <p>Most customers lost to a failed payment never chose to leave. That's involuntary churn, and it usually comes down to one missing detail and one extra step nobody takes.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4"><div class="problem-card">
+          <h5 class="mb-2">Retries can't fix everything</h5>
+          <p class="mb-0">When a card has expired or been replaced, no amount of retrying will cure it. Often all you need is a new expiration date or card number.</p>
+        </div></div>
+        <div class="col-md-4"><div class="problem-card">
+          <h5 class="mb-2">The login wall</h5>
+          <p class="mb-0">The usual outreach asks customers to sign in to your site and fix it themselves. They've forgotten their password or can't be bothered, so they don't.</p>
+        </div></div>
+        <div class="col-md-4"><div class="problem-card">
+          <h5 class="mb-2">Then they're cancelled</h5>
+          <p class="mb-0">After enough unanswered attempts, the subscription is cancelled. A customer who still wanted your product is gone, often without realizing it.</p>
+        </div></div>
+      </div>
     </div>
+  </section>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/_assets/payopts/lib/wow/wow.min.js"></script>
-    <script src="/_assets/payopts/lib/easing/easing.min.js"></script>
-    <script src="/_assets/payopts/lib/waypoints/waypoints.min.js"></script>
-    <script src="/_assets/payopts/lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="/_assets/payopts/lib/counterup/counterup.min.js"></script>
+  <!-- How it works -->
+  <section id="how" class="container-xxl py-5">
+    <div class="container py-4">
+      <div class="text-center mx-auto mb-5" style="max-width: 720px;">
+        <p class="section-title text-primary fw-medium">How It Works</p>
+        <h2 class="display-6 mb-3">One secure link. No login. Two chances to keep the customer.</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-6"><div class="feature-item p-4 p-lg-5">
+          <p class="eyebrow mb-2">Before they're cancelled</p>
+          <h4 class="mb-4">Rescue the declined payment</h4>
+          <div class="d-flex mb-3"><div class="step-num flex-none me-3">1</div><p class="mb-0 pt-2">A payment declines and retries can't cure it.</p></div>
+          <div class="d-flex mb-3"><div class="step-num flex-none me-3">2</div><p class="mb-0 pt-2">Your customer gets a personalized text or email with a secure link.</p></div>
+          <div class="d-flex"><div class="step-num flex-none me-3">3</div><p class="mb-0 pt-2">They confirm the expiration date or enter a new card, with no password. Their subscription never skips a beat.</p></div>
+        </div></div>
+        <div class="col-lg-6"><div class="feature-item p-4 p-lg-5">
+          <p class="eyebrow mb-2">After they're cancelled</p>
+          <h4 class="mb-4">Win back the lost customer</h4>
+          <div class="d-flex mb-3"><div class="step-num flex-none me-3">1</div><p class="mb-0 pt-2">Start with customers who were cancelled after not responding to payment requests.</p></div>
+          <div class="d-flex mb-3"><div class="step-num flex-none me-3">2</div><p class="mb-0 pt-2">They get a win-back message, with an optional offer like a free item on their next order.</p></div>
+          <div class="d-flex"><div class="step-num flex-none me-3">3</div><p class="mb-0 pt-2">One secure link lets them update their card and start back up, with no login.</p></div>
+        </div></div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Custom Javascript -->
-    <script src="/js/library/uxcore/index.js"></script>
-    <script src="/_assets/payopts/js/main.js"></script>
+  <!-- Benefits -->
+  <section class="container-fluid bg-light py-5">
+    <div class="container py-4">
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3"><div class="feature-item p-4">
+          <div class="feature-icon mb-4"><i class="fa fa-unlock"></i></div>
+          <h5 class="mb-3">No login required</h5>
+          <p class="mb-0">A text or email link lets customers update their details without remembering a username or password.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3"><div class="feature-item p-4">
+          <div class="feature-icon mb-4"><i class="fa fa-credit-card"></i></div>
+          <h5 class="mb-3">Rescue declined payments</h5>
+          <p class="mb-0">Fix the payments retries can't, before the customer is cancelled or even notices a problem.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3"><div class="feature-item p-4">
+          <div class="feature-icon mb-4"><i class="fa fa-gift"></i></div>
+          <h5 class="mb-3">Win back cancelled customers</h5>
+          <p class="mb-0">Bring cancelled subscribers back with a win-back offer and a one-step way to start up again.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3"><div class="feature-item p-4">
+          <div class="feature-icon mb-4"><i class="fa fa-shield-halved"></i></div>
+          <h5 class="mb-3">Secure by design</h5>
+          <p class="mb-0">Each link is tied to the customer's account, so new card details land exactly where they belong.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
 
-<items style="display: none">
-    <item id="default">Loading...</item>
-    <item id="search">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control search-input" placeholder="Product Name" aria-label="Product" aria-describedby="button-addon2">
-            <button class="btn btn-outline-primary" type="button" id="button-addon2">Search</button>
+
+  <!-- Two ways to work with us -->
+  <section id="options" class="container-xxl py-5">
+    <div class="container py-4">
+      <div class="text-center mx-auto mb-5" style="max-width: 720px;">
+        <p class="section-title text-primary fw-medium">Two Ways to Work With Us</p>
+        <h2 class="display-6 mb-3">Run it yourself, or let us run it for you</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-6"><div class="feature-item p-5">
+          <div class="feature-icon mb-4"><i class="fa fa-sliders"></i></div>
+          <p class="eyebrow mb-2">Do it yourself</p>
+          <h4 class="mb-3">Use the PayOpts tools</h4>
+          <p>Create secure update links, write your own messages and offers, and send them by text or email through the tools you already use. Your team stays in control of every campaign.</p>
+          <a href="#contact" class="btn btn-outline-primary rounded-pill px-4 mt-2">Get started</a>
+        </div></div>
+        <div class="col-lg-6"><div class="feature-item p-5">
+          <div class="feature-icon mb-4"><i class="fa fa-handshake"></i></div>
+          <p class="eyebrow mb-2">Done for you</p>
+          <h4 class="mb-3">Hand us your churned list</h4>
+          <p>Send us the customers who were cancelled after not responding to payment requests, and we'll run the win-back campaign for you, from outreach to win-back offers. You get the recovered revenue without lifting a finger.</p>
+          <a href="#contact" class="btn btn-primary rounded-pill px-4 mt-2">Talk to us</a>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-band py-5">
+    <div class="container py-3 text-center">
+      <h2 class="display-6 mb-3">Don't let a declined card cost you a customer.</h2>
+      <p class="fs-5 mb-4">See how many payments PayOpts could rescue, and how many cancelled customers it could win back.</p>
+      <a href="mailto:info@payopts.com?subject=PayOpts%20demo" class="btn btn-light rounded-pill py-3 px-5 fw-bold text-primary">Book a Demo</a>
+    </div>
+  </section>
+
+  <!-- Integrations logo ribbon -->
+  <section id="integrations" class="logo-ribbon py-5" aria-label="Integrations">
+    <div class="container text-center mb-4">
+      <p class="eyebrow mb-2">Integrations</p>
+      <h2 class="h4 mb-0">Works with the payment processors and messaging tools you already use</h2>
+    </div>
+    <div class="ribbon-viewport">
+      <div class="ribbon-track">
+        <div class="ribbon-set"><div class="logo-item" title="Stripe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/></svg><span>Stripe</span></div><div class="logo-item" title="Square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.01 0A4.01 4.01 0 000 4.01v15.98c0 2.21 1.8 4 4.01 4.01h15.98C22.2 24 24 22.2 24 19.99V4A4.01 4.01 0 0019.99 0H4zm1.62 4.36h12.74c.7 0 1.26.57 1.26 1.27v12.74c0 .7-.56 1.27-1.26 1.27H5.63c-.7 0-1.26-.57-1.26-1.27V5.63a1.27 1.27 0 011.26-1.27zm3.83 4.35a.73.73 0 00-.73.73v5.09c0 .4.32.72.72.72h5.1a.73.73 0 00.73-.72V9.44a.73.73 0 00-.73-.73h-5.1Z"/></svg><span>Square</span></div><div class="logo-item" title="Adyen"><span>Adyen</span></div><div class="logo-item" title="Klaviyo"><span>Klaviyo</span></div><div class="logo-item" title="Mailchimp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.267 0C6.791-.015-1.82 10.246 1.397 12.964l.79.669a3.88 3.88 0 0 0-.22 1.792c.084.84.518 1.644 1.22 2.266.666.59 1.542.964 2.392.964 1.406 3.24 4.62 5.228 8.386 5.34 4.04.12 7.433-1.776 8.854-5.182.093-.24.488-1.316.488-2.267 0-.956-.54-1.352-.885-1.352-.01-.037-.078-.286-.172-.586-.093-.3-.19-.51-.19-.51.375-.563.382-1.065.332-1.35-.053-.353-.2-.653-.496-.964-.296-.311-.902-.63-1.753-.868l-.446-.124c-.002-.019-.024-1.053-.043-1.497-.014-.32-.042-.822-.197-1.315-.186-.668-.508-1.253-.911-1.627 1.112-1.152 1.806-2.422 1.804-3.511-.003-2.095-2.576-2.729-5.746-1.416l-.672.285A678.22 678.22 0 0 0 12.7.504C12.304.159 11.817.002 11.267 0zm.073.873c.166 0 .322.019.465.058.297.084 1.28 1.224 1.28 1.224s-1.826 1.013-3.52 2.426c-2.28 1.757-4.005 4.311-5.037 7.082-.811.158-1.526.618-1.963 1.253-.261-.218-.748-.64-.834-.804-.698-1.326.761-3.902 1.781-5.357C5.834 3.44 9.37.867 11.34.873zm3.286 3.273c.04-.002.06.05.028.074-.143.11-.299.26-.413.414a.04.04 0 0 0 .031.064c.659.004 1.587.235 2.192.574.041.023.012.103-.034.092-.915-.21-2.414-.369-3.97.01-1.39.34-2.45.863-3.224 1.426-.04.028-.086-.023-.055-.06.896-1.035 1.999-1.935 2.987-2.44.034-.018.07.019.052.052-.079.143-.23.447-.278.678-.007.035.032.063.062.042.615-.42 1.684-.868 2.622-.926zm3.023 3.205l.056.001a.896.896 0 0 1 .456.146c.534.355.61 1.216.638 1.845.015.36.059 1.229.074 1.478.034.571.184.651.487.751.17.057.33.098.563.164.706.198 1.125.4 1.39.658.157.162.23.333.253.497.083.608-.472 1.36-1.942 2.041-1.607.746-3.557.935-4.904.785l-.471-.053c-1.078-.145-1.693 1.247-1.046 2.201.417.615 1.552 1.015 2.688 1.015 2.604 0 4.605-1.111 5.35-2.072a.987.987 0 0 0 .06-.085c.036-.055.006-.085-.04-.054-.608.416-3.31 2.069-6.2 1.571 0 0-.351-.057-.672-.182-.255-.1-.788-.344-.853-.891 2.333.72 3.801.039 3.801.039a.072.072 0 0 0 .042-.072.067.067 0 0 0-.074-.06s-1.911.283-3.718-.378c.197-.64.72-.408 1.51-.345a11.045 11.045 0 0 0 3.647-.394c.818-.234 1.892-.697 2.727-1.356.281.618.38 1.299.38 1.299s.219-.04.4.073c.173.106.299.326.213.895-.176 1.063-.628 1.926-1.387 2.72a5.714 5.714 0 0 1-1.666 1.244c-.34.18-.704.334-1.087.46-2.863.935-5.794-.093-6.739-2.3a3.545 3.545 0 0 1-.189-.522c-.403-1.455-.06-3.2 1.008-4.299.065-.07.132-.153.132-.256 0-.087-.055-.179-.102-.243-.374-.543-1.669-1.466-1.409-3.254.187-1.284 1.31-2.189 2.357-2.135.089.004.177.01.266.015.453.027.85.085 1.223.1.625.028 1.187-.063 1.853-.618.225-.187.405-.35.71-.401.028-.005.092-.028.215-.028zm.022 2.18a.42.42 0 0 0-.06.005c-.335.054-.347.468-.228 1.04.068.32.187.595.32.765.175-.02.343-.022.498 0 .089-.205.104-.557.024-.942-.112-.535-.261-.872-.554-.868zm-3.66 1.546a1.724 1.724 0 0 0-1.016.326c-.16.117-.311.28-.29.378.008.032.031.056.088.063.131.015.592-.217 1.122-.25.374-.023.684.094.923.2.239.104.386.173.443.113.037-.038.026-.11-.031-.204-.118-.192-.36-.387-.618-.497a1.601 1.601 0 0 0-.621-.129zm4.082.81c-.171-.003-.313.186-.317.42-.004.236.131.43.303.432.172.003.314-.185.318-.42.004-.236-.132-.429-.304-.432zm-3.58.172c-.05 0-.102.002-.155.008-.311.05-.483.152-.593.247-.094.082-.152.173-.152.237a.075.075 0 0 0 .075.076c.07 0 .228-.063.228-.063a1.98 1.98 0 0 1 1.001-.104c.157.018.23.027.265-.026.01-.016.022-.049-.01-.1-.063-.103-.311-.269-.66-.275zm2.26.4c-.127 0-.235.051-.283.148-.075.154.035.363.246.466.21.104.443.063.52-.09.075-.155-.035-.364-.246-.467a.542.542 0 0 0-.237-.058zm-11.635.024c.048 0 .098 0 .149.003.73.04 1.806.6 2.052 2.19.217 1.41-.128 2.843-1.449 3.069-.123.02-.248.029-.374.026-1.22-.033-2.539-1.132-2.67-2.435-.145-1.44.591-2.548 1.894-2.811.117-.024.252-.04.398-.042zm-.07.927a1.144 1.144 0 0 0-.847.364c-.38.418-.439.988-.366 1.19.027.073.07.094.1.098.064.008.16-.039.22-.2a1.2 1.2 0 0 0 .017-.052 1.58 1.58 0 0 1 .157-.37.689.689 0 0 1 .955-.199c.266.174.369.5.255.81-.058.161-.154.469-.133.721.043.511.357.717.64.738.274.01.466-.143.515-.256.029-.067.005-.107-.011-.125-.043-.053-.113-.037-.18-.021a.638.638 0 0 1-.16.022.347.347 0 0 1-.294-.148c-.078-.12-.073-.3.013-.504.011-.028.025-.058.04-.092.138-.308.368-.825.11-1.317-.195-.37-.513-.602-.894-.65a1.135 1.135 0 0 0-.138-.01z"/></svg><span>Mailchimp</span></div><div class="logo-item" title="Twilio"><span>Twilio</span></div><div class="logo-item" title="Omnisend"><span>Omnisend</span></div><div class="logo-item" title="ActiveCampaign"><span>ActiveCampaign</span></div></div>
+        <div class="ribbon-set" aria-hidden="true"><div class="logo-item" title="Stripe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/></svg><span>Stripe</span></div><div class="logo-item" title="Square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.01 0A4.01 4.01 0 000 4.01v15.98c0 2.21 1.8 4 4.01 4.01h15.98C22.2 24 24 22.2 24 19.99V4A4.01 4.01 0 0019.99 0H4zm1.62 4.36h12.74c.7 0 1.26.57 1.26 1.27v12.74c0 .7-.56 1.27-1.26 1.27H5.63c-.7 0-1.26-.57-1.26-1.27V5.63a1.27 1.27 0 011.26-1.27zm3.83 4.35a.73.73 0 00-.73.73v5.09c0 .4.32.72.72.72h5.1a.73.73 0 00.73-.72V9.44a.73.73 0 00-.73-.73h-5.1Z"/></svg><span>Square</span></div><div class="logo-item" title="Adyen"><span>Adyen</span></div><div class="logo-item" title="Klaviyo"><span>Klaviyo</span></div><div class="logo-item" title="Mailchimp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.267 0C6.791-.015-1.82 10.246 1.397 12.964l.79.669a3.88 3.88 0 0 0-.22 1.792c.084.84.518 1.644 1.22 2.266.666.59 1.542.964 2.392.964 1.406 3.24 4.62 5.228 8.386 5.34 4.04.12 7.433-1.776 8.854-5.182.093-.24.488-1.316.488-2.267 0-.956-.54-1.352-.885-1.352-.01-.037-.078-.286-.172-.586-.093-.3-.19-.51-.19-.51.375-.563.382-1.065.332-1.35-.053-.353-.2-.653-.496-.964-.296-.311-.902-.63-1.753-.868l-.446-.124c-.002-.019-.024-1.053-.043-1.497-.014-.32-.042-.822-.197-1.315-.186-.668-.508-1.253-.911-1.627 1.112-1.152 1.806-2.422 1.804-3.511-.003-2.095-2.576-2.729-5.746-1.416l-.672.285A678.22 678.22 0 0 0 12.7.504C12.304.159 11.817.002 11.267 0zm.073.873c.166 0 .322.019.465.058.297.084 1.28 1.224 1.28 1.224s-1.826 1.013-3.52 2.426c-2.28 1.757-4.005 4.311-5.037 7.082-.811.158-1.526.618-1.963 1.253-.261-.218-.748-.64-.834-.804-.698-1.326.761-3.902 1.781-5.357C5.834 3.44 9.37.867 11.34.873zm3.286 3.273c.04-.002.06.05.028.074-.143.11-.299.26-.413.414a.04.04 0 0 0 .031.064c.659.004 1.587.235 2.192.574.041.023.012.103-.034.092-.915-.21-2.414-.369-3.97.01-1.39.34-2.45.863-3.224 1.426-.04.028-.086-.023-.055-.06.896-1.035 1.999-1.935 2.987-2.44.034-.018.07.019.052.052-.079.143-.23.447-.278.678-.007.035.032.063.062.042.615-.42 1.684-.868 2.622-.926zm3.023 3.205l.056.001a.896.896 0 0 1 .456.146c.534.355.61 1.216.638 1.845.015.36.059 1.229.074 1.478.034.571.184.651.487.751.17.057.33.098.563.164.706.198 1.125.4 1.39.658.157.162.23.333.253.497.083.608-.472 1.36-1.942 2.041-1.607.746-3.557.935-4.904.785l-.471-.053c-1.078-.145-1.693 1.247-1.046 2.201.417.615 1.552 1.015 2.688 1.015 2.604 0 4.605-1.111 5.35-2.072a.987.987 0 0 0 .06-.085c.036-.055.006-.085-.04-.054-.608.416-3.31 2.069-6.2 1.571 0 0-.351-.057-.672-.182-.255-.1-.788-.344-.853-.891 2.333.72 3.801.039 3.801.039a.072.072 0 0 0 .042-.072.067.067 0 0 0-.074-.06s-1.911.283-3.718-.378c.197-.64.72-.408 1.51-.345a11.045 11.045 0 0 0 3.647-.394c.818-.234 1.892-.697 2.727-1.356.281.618.38 1.299.38 1.299s.219-.04.4.073c.173.106.299.326.213.895-.176 1.063-.628 1.926-1.387 2.72a5.714 5.714 0 0 1-1.666 1.244c-.34.18-.704.334-1.087.46-2.863.935-5.794-.093-6.739-2.3a3.545 3.545 0 0 1-.189-.522c-.403-1.455-.06-3.2 1.008-4.299.065-.07.132-.153.132-.256 0-.087-.055-.179-.102-.243-.374-.543-1.669-1.466-1.409-3.254.187-1.284 1.31-2.189 2.357-2.135.089.004.177.01.266.015.453.027.85.085 1.223.1.625.028 1.187-.063 1.853-.618.225-.187.405-.35.71-.401.028-.005.092-.028.215-.028zm.022 2.18a.42.42 0 0 0-.06.005c-.335.054-.347.468-.228 1.04.068.32.187.595.32.765.175-.02.343-.022.498 0 .089-.205.104-.557.024-.942-.112-.535-.261-.872-.554-.868zm-3.66 1.546a1.724 1.724 0 0 0-1.016.326c-.16.117-.311.28-.29.378.008.032.031.056.088.063.131.015.592-.217 1.122-.25.374-.023.684.094.923.2.239.104.386.173.443.113.037-.038.026-.11-.031-.204-.118-.192-.36-.387-.618-.497a1.601 1.601 0 0 0-.621-.129zm4.082.81c-.171-.003-.313.186-.317.42-.004.236.131.43.303.432.172.003.314-.185.318-.42.004-.236-.132-.429-.304-.432zm-3.58.172c-.05 0-.102.002-.155.008-.311.05-.483.152-.593.247-.094.082-.152.173-.152.237a.075.075 0 0 0 .075.076c.07 0 .228-.063.228-.063a1.98 1.98 0 0 1 1.001-.104c.157.018.23.027.265-.026.01-.016.022-.049-.01-.1-.063-.103-.311-.269-.66-.275zm2.26.4c-.127 0-.235.051-.283.148-.075.154.035.363.246.466.21.104.443.063.52-.09.075-.155-.035-.364-.246-.467a.542.542 0 0 0-.237-.058zm-11.635.024c.048 0 .098 0 .149.003.73.04 1.806.6 2.052 2.19.217 1.41-.128 2.843-1.449 3.069-.123.02-.248.029-.374.026-1.22-.033-2.539-1.132-2.67-2.435-.145-1.44.591-2.548 1.894-2.811.117-.024.252-.04.398-.042zm-.07.927a1.144 1.144 0 0 0-.847.364c-.38.418-.439.988-.366 1.19.027.073.07.094.1.098.064.008.16-.039.22-.2a1.2 1.2 0 0 0 .017-.052 1.58 1.58 0 0 1 .157-.37.689.689 0 0 1 .955-.199c.266.174.369.5.255.81-.058.161-.154.469-.133.721.043.511.357.717.64.738.274.01.466-.143.515-.256.029-.067.005-.107-.011-.125-.043-.053-.113-.037-.18-.021a.638.638 0 0 1-.16.022.347.347 0 0 1-.294-.148c-.078-.12-.073-.3.013-.504.011-.028.025-.058.04-.092.138-.308.368-.825.11-1.317-.195-.37-.513-.602-.894-.65a1.135 1.135 0 0 0-.138-.01z"/></svg><span>Mailchimp</span></div><div class="logo-item" title="Twilio"><span>Twilio</span></div><div class="logo-item" title="Omnisend"><span>Omnisend</span></div><div class="logo-item" title="ActiveCampaign"><span>ActiveCampaign</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="footer pt-5">
+    <div class="container py-4">
+      <div class="row g-5">
+        <div class="col-lg-4 col-md-6">
+          <h4 class="mb-4">PayOpts</h4>
+          <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>55 N Merchant St., #1186, American Fork, UT</p>
+          <p class="mb-2"><i class="fa fa-phone-alt me-3"></i><a class="d-inline" href="tel:+13852690729">385.269.0729</a></p>
+          <p class="mb-2"><i class="fa fa-envelope me-3"></i><a class="d-inline" href="mailto:info@payopts.com">info@payopts.com</a></p>
         </div>
-    </item>
-    <item id="products">
-        <div class="container mt-5">
-            <h1>Results</h1>
-            <table class="table mt-3">
-                <thead>
-                <tr>
-                    <th class="col-1" scope="col">ID</th>
-                    <th class="col-6" scope="col">Items</th>
-                    <th class="col-2" scope="col">Price</th>
-                    <th class="col-2" scope="col">Quantity</th>
-                    <th class="col-1" scope="col"></th>
-                </tr>
-                </thead>
-                <tbody class="clone">
-                <tr>
-                    <th scope="row">{{rec:id}}</th>
-                    <td>{{rec:name}} ({{rec:sku8}})</td>
-                    <td>$
-                        <div class="float-end">{{rec:price}}</div></td>
-                    <td>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" type="text" name="qty" value="1" disabled>
-                            <button class="btn btn-sm btn-outline-light text-dark" type="button">-</button>
-                            <button class="btn btn-sm btn-outline-light text-dark" type="button">+</button>
-                        </div>
-                    </td>
-                    <td class="text-center"><button type="button" class="btn btn-sm btn-light cart-add">Add</button></td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="col-lg-4 col-md-6">
+          <h5 class="mb-4">Quick Links</h5>
+          <a href="#problem">The Problem</a>
+          <a href="#how">How It Works</a>
+          <a href="#integrations">Integrations</a>
+          <a href="https://www.payopts.com/login">Login</a>
         </div>
-    </item>
-    <item id="items" data-callback="orderTotals">
-        <div class="container mt-5">
-            <h1>Cart</h1>
-            <table class="table mt-3">
-                <thead>
-                <tr>
-                    <th class="col-4" scope="col">Items</th>
-                    <th class="col-2" scope="col">Price</th>
-                    <th class="col-3" scope="col">Quantity</th>
-                    <th class="col-2" scope="col">Subtotal</th>
-                    <th class="col-1" scope="col"></th>
-                </tr>
-                </thead>
-                <tbody class="clone">
-                <tr>
-                    <td>{{rec:name}} ({{rec:sku8}})</td>
-                    <td>$
-                        <div class="float-end">{{rec:price}}</div>
-                    </td>
-                    <td>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" type="text" name="qty" value="{{rec:qty}}" disabled>
-                            <button class="btn btn-sm btn-outline-light text-dark" type="button">-</button>
-                            <button class="btn btn-sm btn-outline-light text-dark" type="button">+</button>
-                        </div>
-                    </td>
-                    <td>$
-                        <div class="float-end">{{rec:subtotal}}</div>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-sm cart-remove text-muted"><i class="far fa-trash-alt"></i></button>
-                    </td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="3" class="text-right"><div class="float-end">Subtotal</div></td>
-                    <td>$
-                        <span class="float-end cart-subtotal"></span>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="text-right">
-                        <div class="float-end">%</div>
-                        <div class="float-end cart-tax-percent"></div>
-                        <div class="float-end text-muted">Taxes&nbsp;</div>
-                    </td>
-                    <td>$
-                        <span class="float-end cart-taxes text-muted"></span>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-sm cart-calc-tax text-muted"><i class="fas fa-calculator"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <!--<button type="button" class="btn btn-sm btn-outline-success cart-shipping">Shipping</button>-->
-                        <a href="/Forms/address" class="btn btn-sm btn-outline-success cart-shipping">Shipping</a>
-                    </td>
-                    <td colspan="2" class="text-right">
-                        <button type="button" class="btn btn-success btn-sm cart-pay">Payment</button>
-                        <div class="float-end fw-bold">Total</div>
-                    </td>
-                    <td>$
-                        <span class="float-end cart-total fw-bold"></span>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-sm text-success"><i class="fas fa-check"></i></button>
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
-            <div class="row shipping-info">
-                <div class="col">
-                    <span class="type text-uppercase fw-bold"></span><br>
-                    <span class="addressee"></span>
-                    <span class="address"></span> <span class="address2"></span>
-                    <span class="city"></span>
-                    <span class="stateCd"></span>
-                    <span class="postalCd"></span>
-                </div>
-            </div>
+        <div class="col-lg-4 col-md-6">
+          <h5 class="mb-4">Talk to Us</h5>
+          <p>Want to rescue more payments and win back more customers? Email <a class="d-inline" href="mailto:info@payopts.com">info@payopts.com</a> or call <a class="d-inline" href="tel:+13852690729">385.269.0729</a>.</p>
         </div>
-    </item>
-    <item id="header">
-        <div class="top-bar row gx-0 align-items-center d-none d-lg-flex">
-            <div class="col-lg-6 px-5 text-start">
-                <!--<small><i class="fa fa-map-marker-alt text-primary me-2"></i>55 N Merchant St., #1186, American Fork, UT, USA</small>-->
-                <!--<small class="ms-4"><i class="fa fa-clock text-primary me-2"></i>9.00 am - 9.00 pm</small>-->
-            </div>
-            <div class="col-lg-6 px-5 text-end">
-                <small><i class="fa fa-envelope text-primary me-2"></i>info@payopts.com</small>
-                <small class="ms-4"><i class="fa fa-phone-alt text-primary me-2"></i>385.269.0729</small>
-            </div>
-        </div>
-    </item>
-    <item id="nav">
-        <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
-            <a href="" class="navbar-brand ms-4 ms-lg-0">
-                <h1 class="display-5 text-primary m-0">PayOpts</h1>
-            </a>
-            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="#top" class="nav-item nav-link active">Home</a>
-                    <a href="#nav-features" class="nav-item nav-link marketing">Features</a>
-                    <!--<a href="#nav-about" class="nav-item nav-link">About</a>-->
-                    <!--<a href="#nav-service" class="nav-item nav-link">Services</a>-->
-                   <!-- <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu border-light m-0">
-                            <a href="#nav-projects" class="dropdown-item">Projects</a>
-                            <a href="#nav-features" class="dropdown-item">Features</a>
-                            <a href="#nav-team" class="dropdown-item">Team Member</a>
-                            <a href="#nav-testimonials" class="dropdown-item">Testimonial</a>
-                        </div>
-                    </div>-->
-                    <a href="#nav-contact" class="nav-item nav-link marketing">Contact</a>
-                    <a href="/Forms/login" class="d-none nav-item nav-link marketing">Login</a>
-                    <a href="/Auth/remote/signOut" data-name="Logout" class="d-none nav-item nav-link dashboard" style="display: none">Logout</a>
-                    <a href="/Forms/signup" class="d-none nav-item nav-link marketing">Signup</a>
-                </div>
-                <!--<div class="d-none d-lg-flex ms-2" style="display: none;">
-                    <a class="btn btn-light btn-sm-square rounded-circle ms-3" href="">
-                        <small class="fab fa-facebook-f text-primary"></small>
-                    </a>
-                    <a class="btn btn-light btn-sm-square rounded-circle ms-3" href="">
-                        <small class="fab fa-twitter text-primary"></small>
-                    </a>
-                    <a class="btn btn-light btn-sm-square rounded-circle ms-3" href="">
-                        <small class="fab fa-linkedin-in text-primary"></small>
-                    </a>
-                </div>-->
-            </div>
-        </nav>
-    </item>
-    <item id="carousel">
-        <div id="header-carousel" class="carousel slide carousel-fade marketing" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img class="w-100" src="/_assets/payopts/img/carousel-1.jpg" alt="Image">
-                    <div class="carousel-caption">
-                        <div class="container">
-                            <div class="row justify-content-start">
-                                <div class="col-lg-8">
-                                    <p class="d-none d-inline-block border border-white rounded text-primary fw-semi-bold py-1 px-3 animated slideInDown">Welcome to PayOpts</p>
-                                    <h1 class="display-1 mb-4 animated slideInDown">Unique Payment Solutions, for a seamless order process across all channels</h1>
-                                    <a href="/Frontend/pocketContent/solution" class="d-none btn btn-primary py-3 px-5 animated slideInDown">Explore More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img class="w-100" src="/_assets/payopts/img/carousel-2.jpg" alt="Image">
-                    <div class="carousel-caption">
-                        <div class="container">
-                            <div class="row justify-content-start">
-                                <div class="col-lg-7">
-                                    <p class="d-none d-inline-block border border-white rounded text-primary fw-semi-bold py-1 px-3 animated slideInDown">Welcome to PayOpts</p>
-                                    <h1 class="display-1 mb-4 animated slideInDown">Stop Guessing, Start Knowing: AI-Driven Insights from Every Customer</h1>
-                                    <a href="/Frontend/pocketContent/easy" class="d-none btn btn-primary py-3 px-5 animated slideInDown">Explore More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
-                    data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#header-carousel"
-                    data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
-    </item>
-    <item id="about">
-        <div class="container">
-            <div class="row g-4 align-items-end mb-4">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <img class="img-fluid rounded" src="/_assets/payopts/img/about.jpg">
-                </div>
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <p class="d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">About Us</p>
-                    <h1 class="display-5 mb-4">Unlock Seamless Phone Orders, Effortless Payments, and AI-Powered Insights</h1>
-                    <p class="mb-4">Streamline phone orders, offer effortless payment options with passwordless updates, proactively mitigate churn, and gain unprecedented customer insights with PayOpts AI – the all-in-one solution designed for the modern Direct-to-Consumer business.</p>
-                    <div class="border rounded p-4">
-                        <nav>
-                            <div class="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                <button class="nav-link fw-semi-bold active" id="nav-story-tab" data-bs-toggle="tab" data-bs-target="#nav-story" type="button" role="tab" aria-controls="nav-story" aria-selected="true">Story</button>
-                                <button class="nav-link fw-semi-bold" id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission" type="button" role="tab" aria-controls="nav-mission" aria-selected="false">Mission</button>
-                                <button class="nav-link fw-semi-bold" id="nav-vision-tab" data-bs-toggle="tab" data-bs-target="#nav-vision" type="button" role="tab" aria-controls="nav-vision" aria-selected="false">Vision</button>
-                            </div>
-                        </nav>
-                        <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-story" role="tabpanel" aria-labelledby="nav-story-tab">
-                                <p>Fueled by our own frustrating experiences with payment systems and platforms that seem designed to push every transaction online, we set out to revolutionize how businesses handle orders beyond the typical website subscription.</p>
-                                <p class="mb-0">While many companies have their recurring payments like subscriptions or auto-ship handled, we recognized the struggle with other crucial order types – phone orders, in-store purchases, and more. This frustration drove us to develop innovative solutions that bridge this gap, empowering businesses to seamlessly manage all their transactions, regardless of where they originate.</p>
-                            </div>
-                            <div class="tab-pane fade" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
-                                <p>Think of us like your dedicated department of payment efficiency. Our cutting-edge solutions are meticulously designed to eliminate every unnecessary click, every extra step, and any friction point that could hinder a sale, risk losing a valued customer, <strong>or prevent a paused customer from easily reactivating.</strong></p>
-                                <p class="mb-0">We're dedicated to helping our customers turn every payment hurdle into a strategic advantage.</p>
-                            </div>
-                            <div class="tab-pane fade" id="nav-vision" role="tabpanel" aria-labelledby="nav-vision-tab">
-                                <p>We'd like to say our mission is total world domination, but we'll settle for driving growth and success for our customers, one problem at a time through our unwavering commitment to technological advancements and creativity.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="nav-features" class="border rounded p-4 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="row g-4">
-                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
-                        <div class="h-100">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 btn-lg-square rounded-circle bg-primary">
-                                    <i class="fa fa-phone text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h4>Phone Order Optimization</h4>
-                                    <span>Transform your phone order process into a seamless, compliant, and revenue-generating powerhouse with PayOpts' Phone Order Optimization</span>
-                                    <a class="fw-semi-bold" href="/Frontend/pocketContent/invoice">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                                <div class="border-end d-none d-lg-block"></div>
-                            </div>
-                            <div class="border-bottom mt-4 d-block d-lg-none"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.3s">
-                        <div class="h-100">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 btn-lg-square rounded-circle bg-primary">
-                                    <i class="fa fa-times text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h4>Passwordless Payment Account Updates</h4>
-                                    <span>Empower your customers to easily manage their payments and accounts, leading to higher retention and reduced churn</span>
-                                    <a class="fw-semi-bold" href="/Frontend/pocketContent/invoice">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                            </div>
-                            <div class="border-bottom mt-4 d-block d-lg-none"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-                        <div class="h-100">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 btn-lg-square rounded-circle bg-primary">
-                                    <i class="fa fa-users text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h4>Churn Mitigation</h4>
-                                    <span>Reduce churn and maintain consistent revenue streams by empowering customers to easily manage their account information with PayOpts' proactive mitigation features</span>
-                                    <a class="fw-semi-bold" href="/Frontend/pocketContent/invoice">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                                <div class="border-end d-none d-lg-block"></div>
-                            </div>
-                            <div class="border-bottom mt-4 d-block d-lg-none"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-                        <div class="h-100">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 btn-lg-square rounded-circle bg-primary">
-                                    <i class="fa fa-lock-open text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h4>AI Assisted Sales Analysis</h4>
-                                    <span>Transform raw call data into actionable intelligence with PayOpts AI, closing the feedback loop and empowering data-driven decisions across your marketing, product, and sales teams</span>
-                                    <a class="fw-semi-bold" href="/Frontend/pocketContent/invoice">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="facts">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-sm-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.1s">
-                    <i class="fa fa-users fa-3x text-white mb-3"></i>
-                    <h1 class="display-4 text-white" data-toggle="counter-up">1234</h1>
-                    <span class="fs-5 text-white">Happy Clients</span>
-                    <hr class="bg-white w-25 mx-auto mb-0">
-                </div>
-                <div class="col-sm-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.3s">
-                    <i class="fa fa-check fa-3x text-white mb-3"></i>
-                    <h1 class="display-4 text-white" data-toggle="counter-up">1234</h1>
-                    <span class="fs-5 text-white">Projects Completed</span>
-                    <hr class="bg-white w-25 mx-auto mb-0">
-                </div>
-                <div class="col-sm-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.5s">
-                    <i class="fa fa-users-cog fa-3x text-white mb-3"></i>
-                    <h1 class="display-4 text-white" data-toggle="counter-up">1234</h1>
-                    <span class="fs-5 text-white">Dedicated Staff</span>
-                    <hr class="bg-white w-25 mx-auto mb-0">
-                </div>
-                <div class="col-sm-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.7s">
-                    <i class="fa fa-award fa-3x text-white mb-3"></i>
-                    <h1 class="display-4 text-white" data-toggle="counter-up">1234</h1>
-                    <span class="fs-5 text-white">Awards Achieved</span>
-                    <hr class="bg-white w-25 mx-auto mb-0">
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="features">
-        <div class="container">
-            <div class="row g-5 align-items-center">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <p class="d-none d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">Why PayOpts!</p>
-                    <h1 class="display-5 mb-4">Seamless Integration with Your Existing Tech Stack</h1>
-                    <p class="mb-4">Compatibility is at the heart of PayOpts. We understand you've already invested in powerful marketing, CRM, and e-commerce tools. That's why our system is <strong>platform-agnostic</strong>, designed to integrate seamlessly and work effectively with the solutions you already rely on.</p>
-                    <a class="d-none btn btn-primary py-3 px-5" id="solve" href="/Frontend/pocketContent/fundamentals">Explore More</a>
-                </div>
-                <div class="col-lg-6">
-                    <div class="row g-4 align-items-center">
-                        <div class="col-md-6">
-                            <div class="row g-4">
-                                <div class="col-12 wow fadeIn" data-wow-delay="0.3s">
-                                    <div class="feature-box border rounded p-4">
-                                        <i class="fa fa-check fa-3x text-primary mb-3"></i>
-                                        <h4 class="mb-3">Payment Processing<</h4>
-                                        <p class="mb-3">Stripe, Sqaure, Adyen</p>
-                                        <a class="d-none fw-semi-bold" href="/Frontend/pocketContent/callIn">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                                    </div>
-                                </div>
-                                <div class="col-12 wow fadeIn" data-wow-delay="0.5s">
-                                    <div class="feature-box border rounded p-4">
-                                        <i class="fa fa-check fa-3x text-primary mb-3"></i>
-                                        <h4 class="mb-3">Instant Invoice</h4>
-                                        <p class="mb-3">Accelerate your billing process with our instant invoicing solution.</p>
-                                        <a class="d-none fw-semi-bold" href="/Frontend/pocketContent/invoice">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 wow fadeIn" data-wow-delay="0.7s">
-                            <div class="feature-box border rounded p-4">
-                                <i class="fa fa-check fa-3x text-primary mb-3"></i>
-                                <h4 class="mb-3">Marketing Communications</h4>
-                                <p class="mb-3">Klavio, Mailchimp, Twillio, Omnisend, Active Campaign and more</p>
-                                <a class="d-none fw-semi-bold" href="/Frontend/pocketContent/checkout">Read More <i class="fa fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                        <div class="col-md-6 wow fadeIn" data-wow-delay="0.7s">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="service">
-        <div class="container">
-            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <p class="d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">Our Services</p>
-                <h1 class="display-5 mb-5">Awesome Financial Services For Business</h1>
-            </div>
-            <div class="row g-4 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="col-lg-4">
-                    <div class="nav nav-pills d-flex justify-content-between w-100 h-100 me-4">
-                        <button class="nav-link w-100 d-flex align-items-center text-start border p-4 mb-4 active" data-bs-toggle="pill" data-bs-target="#tab-pane-1" type="button">
-                            <h5 class="m-0"><i class="fa fa-bars text-primary me-3"></i>Financial Planning</h5>
-                        </button>
-                        <button class="nav-link w-100 d-flex align-items-center text-start border p-4 mb-4" data-bs-toggle="pill" data-bs-target="#tab-pane-2" type="button">
-                            <h5 class="m-0"><i class="fa fa-bars text-primary me-3"></i>Cash Investment</h5>
-                        </button>
-                        <button class="nav-link w-100 d-flex align-items-center text-start border p-4 mb-4" data-bs-toggle="pill" data-bs-target="#tab-pane-3" type="button">
-                            <h5 class="m-0"><i class="fa fa-bars text-primary me-3"></i>Financial Consultancy</h5>
-                        </button>
-                        <button class="nav-link w-100 d-flex align-items-center text-start border p-4 mb-0" data-bs-toggle="pill" data-bs-target="#tab-pane-4" type="button">
-                            <h5 class="m-0"><i class="fa fa-bars text-primary me-3"></i>Business Loans</h5>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-lg-8">
-                    <div class="tab-content w-100">
-                        <div class="tab-pane fade show active" id="tab-pane-1">
-                            <div class="row g-4">
-                                <div class="col-md-6" style="min-height: 350px;">
-                                    <div class="position-relative h-100">
-                                        <img class="position-absolute rounded w-100 h-100" src="/_assets/payopts/img/service-1.jpg"
-                                             style="object-fit: cover;" alt="">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h3 class="mb-4">25 Years Of Experience In Financial Support</h3>
-                                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo erat amet.</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Secured Loans</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Credit Facilities</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Cash Advanced</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="tab-pane-2">
-                            <div class="row g-4">
-                                <div class="col-md-6" style="min-height: 350px;">
-                                    <div class="position-relative h-100">
-                                        <img class="position-absolute rounded w-100 h-100" src="/_assets/payopts/img/service-2.jpg"
-                                             style="object-fit: cover;" alt="">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h3 class="mb-4">25 Years Of Experience In Financial Support</h3>
-                                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo erat amet.</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Secured Loans</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Credit Facilities</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Cash Advanced</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="tab-pane-3">
-                            <div class="row g-4">
-                                <div class="col-md-6" style="min-height: 350px;">
-                                    <div class="position-relative h-100">
-                                        <img class="position-absolute rounded w-100 h-100" src="/_assets/payopts/img/service-3.jpg"
-                                             style="object-fit: cover;" alt="">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h3 class="mb-4">25 Years Of Experience In Financial Support</h3>
-                                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo erat amet.</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Secured Loans</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Credit Facilities</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Cash Advanced</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="tab-pane-4">
-                            <div class="row g-4">
-                                <div class="col-md-6" style="min-height: 350px;">
-                                    <div class="position-relative h-100">
-                                        <img class="position-absolute rounded w-100 h-100" src="/_assets/payopts/img/service-4.jpg"
-                                             style="object-fit: cover;" alt="">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h3 class="mb-4">25 Years Of Experience In Financial Support</h3>
-                                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo erat amet.</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Secured Loans</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Credit Facilities</p>
-                                    <p><i class="fa fa-check text-primary me-3"></i>Cash Advanced</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="contact">
-        <div class="container pt-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="bg-white border rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.5s">
-                        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                            <p class="d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">Get In Touch</p>
-                            <h1 class="display-5 mb-5">Request A Call-Back</h1>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-sm-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="name" placeholder="Your Name">
-                                    <label for="name">Your Name</label>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-floating">
-                                    <input type="email" class="form-control" id="mail" placeholder="Your Email">
-                                    <label for="mail">Your Email</label>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="mobile" placeholder="Your Mobile">
-                                    <label for="mobile">Your Mobile</label>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                    <label for="subject">Subject</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Leave a message here" id="message" style="height: 100px"></textarea>
-                                    <label for="message">Message</label>
-                                </div>
-                            </div>
-                            <div class="col-12 text-center">
-                                <button class="btn btn-primary w-100 py-3" type="submit">Submit Now</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="projects">
-        <div class="container">
-            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <p class="d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">Our Projects</p>
-                <h1 class="display-5 mb-5">We Have Completed Latest Projects</h1>
-            </div>
-            <div class="owl-carousel project-carousel wow fadeInUp" data-wow-delay="0.3s">
-                <div class="project-item pe-5 pb-5">
-                    <div class="project-img mb-3">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/service-1.jpg" alt="">
-                        <a href=""><i class="fa fa-link fa-3x text-primary"></i></a>
-                    </div>
-                    <div class="project-title">
-                        <h4 class="mb-0">Financial Planning</h4>
-                    </div>
-                </div>
-                <div class="project-item pe-5 pb-5">
-                    <div class="project-img mb-3">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/service-2.jpg" alt="">
-                        <a href=""><i class="fa fa-link fa-3x text-primary"></i></a>
-                    </div>
-                    <div class="project-title">
-                        <h4 class="mb-0">Cash Investment</h4>
-                    </div>
-                </div>
-                <div class="project-item pe-5 pb-5">
-                    <div class="project-img mb-3">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/service-3.jpg" alt="">
-                        <a href=""><i class="fa fa-link fa-3x text-primary"></i></a>
-                    </div>
-                    <div class="project-title">
-                        <h4 class="mb-0">Financial Consultancy</h4>
-                    </div>
-                </div>
-                <div class="project-item pe-5 pb-5">
-                    <div class="project-img mb-3">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/service-4.jpg" alt="">
-                        <a href=""><i class="fa fa-link fa-3x text-primary"></i></a>
-                    </div>
-                    <div class="project-title">
-                        <h4 class="mb-0">Business Loans</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="team">
-        <div class="container">
-            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <p class="d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">Our Team</p>
-                <h1 class="display-5 mb-5">Exclusive Team</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="team-item">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/team-1.jpg" alt="">
-                        <div class="team-text">
-                            <h4 class="mb-0">Kate Winslet</h4>
-                            <div class="team-social d-flex">
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/team-2.jpg" alt="">
-                        <div class="team-text">
-                            <h4 class="mb-0">Jac Jacson</h4>
-                            <div class="team-social d-flex">
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="team-item">
-                        <img class="img-fluid rounded" src="/_assets/payopts/img/team-3.jpg" alt="">
-                        <div class="team-text">
-                            <h4 class="mb-0">Doris Jordan</h4>
-                            <div class="team-social d-flex">
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square rounded-circle mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="testimonials">
-        <div class="container">
-            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <p class="d-inline-block border rounded text-primary fw-semi-bold py-1 px-3">Testimonial</p>
-                <h1 class="display-5 mb-5">What Our Clients Say!</h1>
-            </div>
-            <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.3s">
-                <div class="testimonial-item">
-                    <div class="testimonial-text border rounded p-4 pt-5 mb-5">
-                        <div class="btn-square bg-white border rounded-circle">
-                            <i class="fa fa-quote-right fa-2x text-primary"></i>
-                        </div>
-                        Dolores sed duo clita tempor justo dolor et stet lorem kasd labore dolore lorem ipsum. At lorem lorem magna ut et, nonumy et labore et tempor diam tempor erat.
-                    </div>
-                    <img class="rounded-circle mb-3" src="/_assets/payopts/img/testimonial-1.jpg" alt="">
-                    <h4>Client Name</h4>
-                    <span>Profession</span>
-                </div>
-                <div class="testimonial-item">
-                    <div class="testimonial-text border rounded p-4 pt-5 mb-5">
-                        <div class="btn-square bg-white border rounded-circle">
-                            <i class="fa fa-quote-right fa-2x text-primary"></i>
-                        </div>
-                        Dolores sed duo clita tempor justo dolor et stet lorem kasd labore dolore lorem ipsum. At lorem lorem magna ut et, nonumy et labore et tempor diam tempor erat.
-                    </div>
-                    <img class="rounded-circle mb-3" src="/_assets/payopts/img/testimonial-2.jpg" alt="">
-                    <h4>Client Name</h4>
-                    <span>Profession</span>
-                </div>
-                <div class="testimonial-item">
-                    <div class="testimonial-text border rounded p-4 pt-5 mb-5">
-                        <div class="btn-square bg-white border rounded-circle">
-                            <i class="fa fa-quote-right fa-2x text-primary"></i>
-                        </div>
-                        Dolores sed duo clita tempor justo dolor et stet lorem kasd labore dolore lorem ipsum. At lorem lorem magna ut et, nonumy et labore et tempor diam tempor erat.
-                    </div>
-                    <img class="rounded-circle mb-3" src="/_assets/payopts/img/testimonial-3.jpg" alt="">
-                    <h4>Client Name</h4>
-                    <span>Profession</span>
-                </div>
-                <div class="testimonial-item">
-                    <div class="testimonial-text border rounded p-4 pt-5 mb-5">
-                        <div class="btn-square bg-white border rounded-circle">
-                            <i class="fa fa-quote-right fa-2x text-primary"></i>
-                        </div>
-                        Dolores sed duo clita tempor justo dolor et stet lorem kasd labore dolore lorem ipsum. At lorem lorem magna ut et, nonumy et labore et tempor diam tempor erat.
-                    </div>
-                    <img class="rounded-circle mb-3" src="/_assets/payopts/img/testimonial-4.jpg" alt="">
-                    <h4>Client Name</h4>
-                    <span>Profession</span>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="footer">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-4">Contact Us</h4>
-                    <p class="d-none mb-2"><i class="fa fa-map-marker-alt me-3"></i>55 N Merchant St., #1186, American Fork, UT, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>801.555.1212</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@payopts.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-square btn-outline-light rounded-circle me-2" href=""><i class="fab fa-twitter"></i></a>
-                        <!-- <a class="btn btn-square btn-outline-light rounded-circle me-2" href=""><i class="fab fa-facebook-f"></i></a> -->
-                        <!-- <a class="btn btn-square btn-outline-light rounded-circle me-2" href=""><i class="fab fa-youtube"></i></a> -->
-                        <a class="btn btn-square btn-outline-light rounded-circle me-2" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="d-none col-lg-3 col-md-6">
-                    <h4 class="text-white mb-4">Services</h4>
-                    <a class="btn btn-link" href="">Financial Planning</a>
-                    <!-- <a class="btn btn-link" href="">Cash Investment</a> -->
-                </div>
-                <div class="d-none col-lg-3 col-md-6">
-                    <h4 class="text-white mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <!-- <a class="btn btn-link" href="">Contact Us</a> -->
-                </div>
-                <div class="d-none col-lg-3 col-md-6">
-                    <h4 class="text-white mb-4">Demo Request</h4>
-                    <p>Let's discuss your payment options!</p>
-                    <div class="position-relative w-100">
-                        <input class="form-control bg-white border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Email/Phone">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Send</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </item>
-    <item id="copyright">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">Pay Options LLC</a>, All Right Reserved.
-                </div>
-            </div>
-        </div>
-    </item>
-</items>
-    <script src="https://cdn.jsdelivr.net/gh/quasicodo42/HTMW@latest/js/htmw.in.js"></script>
+      </div>
+    </div>
+    <div class="copyright py-4">
+      <div class="container text-center text-md-start">&copy; <span id="year"></span> Pay Options LLC. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
